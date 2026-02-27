@@ -1,0 +1,5 @@
+{
+  "name": "PulseVisit",
+  "description": "A premium healthcare mobile application UI for a home-visit doctor booking platform.",
+  "requestFramePermissions": ["geolocation", "notifications"]
+}
