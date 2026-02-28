@@ -263,8 +263,8 @@ export const Profile = () => {
         </button>
         <div className="flex flex-col items-center mt-8">
           <div className="relative mb-4">
-            <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md border-4 border-white/30">
-              <User className="w-12 h-12 text-white" />
+            <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white/30 shadow-xl">
+              <img src="/user_profile_photo.png" alt="Profile" className="w-full h-full object-cover" />
             </div>
             <button className="absolute bottom-0 right-0 w-8 h-8 bg-secondary rounded-full flex items-center justify-center border-2 border-primary shadow-lg">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

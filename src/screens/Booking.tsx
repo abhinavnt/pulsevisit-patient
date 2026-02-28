@@ -10,7 +10,7 @@ export const ConfirmLocation = () => {
   return (
     <ScreenWrapper className="bg-background">
       <TopBar title="Confirm Location" onBack={goBack} />
-      
+
       <div className="px-6 py-6 flex flex-col flex-1">
         <p className="text-gray-500 mb-6">Please confirm the address where the doctor should visit.</p>
 
@@ -61,7 +61,7 @@ export const SearchingDoctor = () => {
       <div className="absolute top-6 left-6 z-20">
         <button onClick={goBack} className="w-10 h-10 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full shadow-sm border border-gray-100">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M15 18l-6-6 6-6"/>
+            <path d="M15 18l-6-6 6-6" />
           </svg>
         </button>
       </div>
@@ -80,7 +80,7 @@ export const SearchingDoctor = () => {
         </div>
       </div>
 
-      <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">Searching nearby<br/>verified doctors</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">Searching nearby<br />verified doctors</h2>
       <p className="text-gray-500 mb-12 text-center">Estimated wait time: 2 mins</p>
 
       <div className="absolute bottom-12 w-full px-6">
@@ -97,16 +97,16 @@ export const DoctorAccepted = () => {
     <ScreenWrapper className="bg-secondary text-white items-center justify-center px-6 relative overflow-hidden">
       {/* Enhanced Background Pulse Effect */}
       {[1, 2, 3].map((i) => (
-        <motion.div 
+        <motion.div
           key={i}
           animate={{ scale: [1, 1.5, 2.5], opacity: [0.15, 0.05, 0] }}
           transition={{ repeat: Infinity, duration: 3, delay: i * 1, ease: "easeOut" }}
           className="absolute top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-full w-64 h-64 pointer-events-none"
         />
       ))}
-      
+
       <div className="flex flex-col items-center justify-center flex-1 w-full mt-8">
-        <motion.div 
+        <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.2 }}
@@ -129,7 +129,7 @@ export const DoctorAccepted = () => {
             </svg>
           </motion.div>
         </motion.div>
-        
+
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -142,7 +142,7 @@ export const DoctorAccepted = () => {
           </p>
 
           {/* Reassuring Next Steps */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2 }}
@@ -170,7 +170,7 @@ export const DoctorAccepted = () => {
         </motion.div>
       </div>
 
-      <motion.div 
+      <motion.div
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.6 }}
@@ -191,11 +191,11 @@ export const Payment = () => {
   return (
     <ScreenWrapper className="bg-background">
       <TopBar title="Payment Summary" onBack={goBack} />
-      
+
       <div className="px-6 py-6 flex flex-col flex-1">
         <Card className="p-6 mb-6">
           <h3 className="text-lg font-bold text-gray-900 mb-6 pb-4 border-b border-gray-100">Consultation Details</h3>
-          
+
           <div className="flex justify-between items-center mb-4">
             <span className="text-gray-500 font-medium">Base Consultation Fee</span>
             <span className="font-semibold text-gray-900">₹500.00</span>
@@ -208,7 +208,7 @@ export const Payment = () => {
             <span className="text-gray-500 font-medium">Platform Fee</span>
             <span className="font-semibold text-gray-900">₹25.00</span>
           </div>
-          
+
           <div className="flex justify-between items-center pt-4 border-t border-dashed border-gray-200">
             <span className="text-lg font-bold text-gray-900">Total Amount</span>
             <span className="text-2xl font-bold text-primary">₹675.00</span>
@@ -236,7 +236,7 @@ export const DoctorEnRoute = () => {
       <div className="absolute inset-0 z-0 bg-gray-200">
         {/* Map Background */}
         <img src="https://developers.google.com/static/maps/documentation/maps-static/images/map-warning.png" alt="Map" className="w-full h-full object-cover opacity-80" referrerPolicy="no-referrer" />
-        
+
         {/* Route Line Simulation */}
         <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 800" fill="none">
           <path d="M200 600 Q 150 400 250 200" stroke="#0F3D73" strokeWidth="6" strokeLinecap="round" strokeDasharray="10 10" className="animate-[dash_20s_linear_infinite]" />
@@ -265,10 +265,10 @@ export const DoctorEnRoute = () => {
 
       <div className="absolute bottom-0 w-full bg-white rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] z-20 p-6 pb-8">
         <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6" />
-        
+
         <div className="flex items-center gap-4 mb-6">
           <div className="relative">
-            <img src="https://picsum.photos/seed/doctor/100/100" alt="Doctor" className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md" referrerPolicy="no-referrer" />
+            <img src="/doctor_profile_photo.png" alt="Doctor" className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md" />
             <div className="absolute -bottom-1 -right-1 bg-secondary text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 border-2 border-white">
               <Star className="w-3 h-3 fill-white" /> 4.9
             </div>
@@ -344,8 +344,8 @@ export const ConsultationOngoing = () => {
   return (
     <ScreenWrapper className="bg-primary text-white items-center justify-center px-6 relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--color-secondary)_0%,_transparent_70%)] opacity-20" />
-      
-      <motion.div 
+
+      <motion.div
         animate={{ scale: [1, 1.05, 1] }}
         transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
         className="w-48 h-48 rounded-full border-4 border-white/20 flex items-center justify-center mb-12 relative z-10"
@@ -359,7 +359,7 @@ export const ConsultationOngoing = () => {
           </div>
         </div>
       </motion.div>
-      
+
       <h2 className="text-2xl font-bold mb-2 text-center tracking-tight relative z-10 text-white">Consultation in progress</h2>
       <p className="text-blue-200 mb-12 text-center relative z-10">Dr. Sarah Jenkins is attending to you.</p>
     </ScreenWrapper>
@@ -412,7 +412,7 @@ export const PrescriptionUploaded = () => {
   return (
     <ScreenWrapper className="bg-background">
       <TopBar title="Consultation Complete" />
-      
+
       <div className="px-6 py-6 flex flex-col flex-1">
         <div className="flex flex-col items-center text-center mb-8 mt-4">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
@@ -432,7 +432,7 @@ export const PrescriptionUploaded = () => {
               <p className="text-xs text-gray-500 mt-1">1.2 MB • Oct 24, 2023</p>
             </div>
           </div>
-          
+
           <Button variant="outline" className="border-secondary text-secondary hover:bg-green-50 gap-2">
             <Download className="w-5 h-5" />
             Download Prescription
@@ -454,7 +454,7 @@ export const RatingFeedback = () => {
   return (
     <ScreenWrapper className="bg-white px-6 py-12 flex flex-col justify-between">
       <div className="flex flex-col items-center text-center mt-12">
-        <img src="https://picsum.photos/seed/doctor/120/120" alt="Doctor" className="w-24 h-24 rounded-full object-cover border-4 border-gray-50 shadow-lg mb-6" referrerPolicy="no-referrer" />
+        <img src="/doctor_profile_photo.png" alt="Doctor" className="w-24 h-24 rounded-full object-cover border-4 border-gray-50 shadow-lg mb-6" />
         <h2 className="text-2xl font-bold text-gray-900 mb-2">How was your visit?</h2>
         <p className="text-gray-500 mb-12 px-4 leading-relaxed">
           Rate your consultation with Dr. Sarah Jenkins to help us improve.
@@ -469,7 +469,7 @@ export const RatingFeedback = () => {
         </div>
 
         <div className="w-full">
-          <textarea 
+          <textarea
             placeholder="Share your feedback (optional)"
             className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 resize-none h-32"
           />
