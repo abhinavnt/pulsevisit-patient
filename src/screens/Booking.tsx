@@ -6,15 +6,17 @@ import { MapPin, Phone, Star, FileText, CheckCircle2, Navigation, Clock, ShieldC
 
 export const ConfirmLocation = () => {
   const { navigate, goBack } = useAppContext();
+  const [selectedReason, setSelectedReason] = useState<string>('');
+  const [customReason, setCustomReason] = useState<string>('');
 
   return (
     <ScreenWrapper className="bg-background">
       <TopBar title="Confirm Location" onBack={goBack} />
 
-      <div className="px-6 py-6 flex flex-col flex-1">
+      <div className="px-6 py-6 flex flex-col flex-1 pb-24">
         <p className="text-gray-500 mb-6">Please confirm the address where the doctor should visit.</p>
 
-        <div className="h-48 bg-gray-200 rounded-2xl mb-6 overflow-hidden relative border border-gray-200">
+        <div className="h-48 bg-gray-200 rounded-2xl mb-6 overflow-hidden relative border border-gray-200 shrink-0">
           <img src="https://staticmapmaker.com/img/google-placeholder.png" alt="Map" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center animate-pulse">
@@ -23,7 +25,7 @@ export const ConfirmLocation = () => {
           </div>
         </div>
 
-        <Card className="p-4 mb-auto border-secondary/30 bg-green-50/30">
+        <Card className="p-4 mb-6 border-secondary/30 bg-green-50/30 shrink-0">
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shrink-0 shadow-sm mt-1">
@@ -40,8 +42,51 @@ export const ConfirmLocation = () => {
           </div>
         </Card>
 
-        <div className="mt-8">
-          <Button onClick={() => navigate('SearchingDoctor')}>Confirm & Search Doctors</Button>
+        {/* Booking Details */}
+        <div className="mb-auto space-y-6">
+          {/* Reason for Visit */}
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900 mb-3">Reason for Visit</h4>
+            <div className="flex flex-wrap gap-2 mb-3">
+              {['Fever', 'Headache', 'Stomach Ache', 'Cold & Cough', 'Body Pain', 'General Checkup'].map((item) => (
+                <button
+                  key={item}
+                  onClick={() => {
+                    if (selectedReason === item) {
+                      setSelectedReason('');
+                    } else {
+                      setSelectedReason(item);
+                      setCustomReason('');
+                    }
+                  }}
+                  className={`px-3.5 py-2 rounded-full border text-xs font-semibold transition-all ${selectedReason === item ? 'border-primary bg-primary text-white shadow-sm' : 'border-gray-200 text-gray-600 bg-white hover:bg-gray-50'}`}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+            <input
+              type="text"
+              placeholder="Or enter the patient issue..."
+              value={customReason}
+              onChange={(e) => {
+                setCustomReason(e.target.value);
+                if (e.target.value) {
+                  setSelectedReason('');
+                }
+              }}
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-sm placeholder:text-gray-400 font-medium transition-colors"
+            />
+          </div>
+        </div>
+
+        <div className="mt-8 shrink-0">
+          <Button
+            onClick={() => navigate('SearchingDoctor')}
+            disabled={!selectedReason && !customReason.trim()}
+          >
+            Confirm & Search Doctors
+          </Button>
         </div>
       </div>
     </ScreenWrapper>
