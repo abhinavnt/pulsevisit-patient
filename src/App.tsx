@@ -5,6 +5,7 @@ import { AppContext, Screen } from './store';
 import { Splash, Permission, Auth, ProfileCompletion } from './screens/Onboarding';
 import { Home, MemberManagement, AddressSelection, ConsultationHistory, Profile } from './screens/Main';
 import { ConfirmLocation, SearchingDoctor, DoctorAccepted, Payment, DoctorEnRoute, OTPVerification, ConsultationOngoing, EndConsultationOTP, PrescriptionUploaded, RatingFeedback } from './screens/Booking';
+import { NurseBooking, SearchingNurse, NurseAccepted, NurseEnRoute, MedicineRequest, MedicineOrderConfirmed, AmbulanceRequest, SearchingAmbulance, AmbulanceEnRoute, PhysioBooking, SearchingPhysio, PhysioAccepted, PhysioEnRoute } from './screens/PulseCare';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('Splash');
@@ -44,6 +45,23 @@ export default function App() {
       case 'RatingFeedback': return <RatingFeedback key="RatingFeedback" />;
       case 'ConsultationHistory': return <ConsultationHistory key="ConsultationHistory" />;
       case 'Profile': return <Profile key="Profile" />;
+      // Pulse Care — Nurse
+      case 'NurseBooking': return <NurseBooking key="NurseBooking" />;
+      case 'SearchingNurse': return <SearchingNurse key="SearchingNurse" />;
+      case 'NurseAccepted': return <NurseAccepted key="NurseAccepted" />;
+      case 'NurseEnRoute': return <NurseEnRoute key="NurseEnRoute" />;
+      // Pulse Care — Medicine
+      case 'MedicineRequest': return <MedicineRequest key="MedicineRequest" />;
+      case 'MedicineOrderConfirmed': return <MedicineOrderConfirmed key="MedicineOrderConfirmed" />;
+      // Pulse Care — Ambulance
+      case 'AmbulanceRequest': return <AmbulanceRequest key="AmbulanceRequest" />;
+      case 'SearchingAmbulance': return <SearchingAmbulance key="SearchingAmbulance" />;
+      case 'AmbulanceEnRoute': return <AmbulanceEnRoute key="AmbulanceEnRoute" />;
+      // Pulse Care — Physiotherapy
+      case 'PhysioBooking': return <PhysioBooking key="PhysioBooking" />;
+      case 'SearchingPhysio': return <SearchingPhysio key="SearchingPhysio" />;
+      case 'PhysioAccepted': return <PhysioAccepted key="PhysioAccepted" />;
+      case 'PhysioEnRoute': return <PhysioEnRoute key="PhysioEnRoute" />;
       default: return <Splash key="Splash" />;
     }
   };

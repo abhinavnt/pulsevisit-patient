@@ -19,7 +19,24 @@ export type Screen =
   | 'PrescriptionUploaded'
   | 'RatingFeedback'
   | 'ConsultationHistory'
-  | 'Profile';
+  | 'Profile'
+  // Pulse Care — Nurse
+  | 'NurseBooking'
+  | 'SearchingNurse'
+  | 'NurseAccepted'
+  | 'NurseEnRoute'
+  // Pulse Care — Medicine
+  | 'MedicineRequest'
+  | 'MedicineOrderConfirmed'
+  // Pulse Care — Ambulance
+  | 'AmbulanceRequest'
+  | 'SearchingAmbulance'
+  | 'AmbulanceEnRoute'
+  // Pulse Care — Physiotherapy
+  | 'PhysioBooking'
+  | 'SearchingPhysio'
+  | 'PhysioAccepted'
+  | 'PhysioEnRoute';
 
 interface AppContextType {
   currentScreen: Screen;
