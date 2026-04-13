@@ -6,6 +6,7 @@ import { MapPin, UserPlus, FileText, ChevronRight, Search, Clock, CheckCircle2, 
 
 export const Home = () => {
   const { navigate, activeTab, setActiveTab } = useAppContext();
+  const [showMoreServices, setShowMoreServices] = React.useState(false);
   // activeTab and setActiveTab now come from global context (App.tsx)
   // so the selected tab is preserved when navigating back from a service screen
 
@@ -240,8 +241,9 @@ export const Home = () => {
             transition={{ duration: 0.2 }}
           >
             <h2 className="text-base font-bold text-gray-900 mb-4">Select a Service</h2>
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              {pulseServices.map((svc) => (
+            {/* Core 4 services — always visible */}
+            <div className="grid grid-cols-2 gap-4 mb-3">
+              {pulseServices.slice(0, 4).map((svc) => (
                 <Card
                   key={svc.id}
                   className={`flex flex-col items-center justify-center p-5 gap-3 border-2 border-transparent ${svc.border} transition-colors cursor-pointer`}
@@ -257,6 +259,45 @@ export const Home = () => {
                 </Card>
               ))}
             </div>
+
+            {/* More Care Services — expandable */}
+            {showMoreServices && (
+              <motion.div
+                key="more-services"
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2 }}
+                className="grid grid-cols-2 gap-4 mb-3"
+              >
+                {pulseServices.slice(4).map((svc) => (
+                  <Card
+                    key={svc.id}
+                    className={`flex flex-col items-center justify-center p-5 gap-3 border-2 border-transparent ${svc.border} transition-colors cursor-pointer`}
+                    onClick={() => { setActiveTab('pulsecare'); navigate(svc.screen); }}
+                  >
+                    <div className={`w-14 h-14 ${svc.bg} rounded-full flex items-center justify-center text-2xl`}>
+                      {svc.icon}
+                    </div>
+                    <div className="text-center">
+                      <p className="font-semibold text-gray-900 text-sm">{svc.title}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{svc.subtitle}</p>
+                    </div>
+                  </Card>
+                ))}
+              </motion.div>
+            )}
+
+            {/* Toggle button */}
+            <button
+              onClick={() => setShowMoreServices(s => !s)}
+              className="w-full flex items-center justify-center gap-2 py-3 mb-5 rounded-2xl border-2 border-dashed border-gray-200 text-sm font-semibold text-secondary hover:bg-secondary/5 transition-all active:scale-[0.98]"
+            >
+              <span>{showMoreServices ? '↑ Show Less' : '✦ More Care Services'}</span>
+              <span className="text-xs text-gray-400 font-normal">
+                {showMoreServices ? '' : `${pulseServices.length - 4} more`}
+              </span>
+            </button>
 
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-base font-bold text-gray-900">Recent Pulse Care</h2>

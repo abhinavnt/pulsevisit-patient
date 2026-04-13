@@ -34,7 +34,7 @@ export const LabTestBooking = () => {
     <ScreenWrapper className="bg-background">
       <TopBar title="Book Lab Test" onBack={goBack} />
 
-      <div className="px-6 py-6 flex flex-col flex-1 pb-28 overflow-y-auto">
+      <div className="px-6 py-6 flex flex-col flex-1 pb-28">
         <div className="flex items-center gap-3 bg-teal-50 border border-teal-200 rounded-2xl p-4 mb-6">
           <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center shrink-0 text-xl">🔬</div>
           <div>
@@ -353,7 +353,7 @@ export const PsychologistBooking = () => {
     <ScreenWrapper className="bg-background">
       <TopBar title="Book Psychologist" onBack={goBack} />
 
-      <div className="px-6 py-6 flex flex-col flex-1 pb-28 overflow-y-auto">
+      <div className="px-6 py-6 flex flex-col flex-1 pb-28">
 
         {/* Mode */}
         <h3 className="text-sm font-bold text-gray-900 mb-3">Session Mode</h3>
@@ -620,7 +620,7 @@ export const OnlineCounseling = () => {
     <ScreenWrapper className="bg-background">
       <TopBar title="Online Counseling" onBack={goBack} />
 
-      <div className="px-6 py-6 flex flex-col flex-1 pb-28 overflow-y-auto">
+      <div className="px-6 py-6 flex flex-col flex-1 pb-28">
 
         {/* Area of focus */}
         <h3 className="text-sm font-bold text-gray-900 mb-3">What would you like to talk about?</h3>

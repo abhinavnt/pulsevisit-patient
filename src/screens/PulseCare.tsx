@@ -31,7 +31,7 @@ export const NurseBooking = () => {
     <ScreenWrapper className="bg-background">
       <TopBar title="Book a Nurse" onBack={goBack} />
 
-      <div className="px-6 py-6 flex flex-col flex-1 pb-28 overflow-y-auto">
+      <div className="px-6 py-6 flex flex-col flex-1 pb-28">
         {/* Booking Type Toggle */}
         <div className="bg-gray-100 rounded-2xl p-1 flex mb-6">
           <button
@@ -748,7 +748,7 @@ export const PhysioBooking = () => {
     <ScreenWrapper className="bg-background">
       <TopBar title="Book Physiotherapy" onBack={goBack} />
 
-      <div className="px-6 py-6 flex flex-col flex-1 pb-28 overflow-y-auto">
+      <div className="px-6 py-6 flex flex-col flex-1 pb-28">
         {/* Session Type Toggle */}
         <div className="bg-gray-100 rounded-2xl p-1 flex mb-6">
           <button
