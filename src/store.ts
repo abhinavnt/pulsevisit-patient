@@ -28,6 +28,7 @@ export type Screen =
   // Pulse Care — Medicine
   | 'MedicineRequest'
   | 'MedicineOrderConfirmed'
+  | 'MedicineTracking'
   // Pulse Care — Ambulance
   | 'AmbulanceRequest'
   | 'SearchingAmbulance'
@@ -73,12 +74,29 @@ export type Screen =
   | 'CarePlanCheckout'
   | 'CarePlanConfirmed';
 
+export interface ActiveBooking {
+  id: string;
+  type: 'doctor' | 'nurse' | 'ambulance' | 'physio' | 'lab' | 'medicine';
+  providerName: string;
+  status: 'searching' | 'confirmed' | 'enroute' | 'arrived' | 'ongoing' | 'ordered' | 'packed' | 'out_for_delivery';
+  eta?: string;
+  icon: string;
+}
+
+export type BookingService = 'doctor' | 'nurse' | 'physio' | 'lab' | 'vaccination' | 'psychologist' | 'dietitian';
+
 interface AppContextType {
   currentScreen: Screen;
   navigate: (screen: Screen) => void;
   goBack: () => void;
   activeTab: 'doctor' | 'pulsecare';
   setActiveTab: (tab: 'doctor' | 'pulsecare') => void;
+  activeBookings: ActiveBooking[];
+  addBooking: (booking: ActiveBooking) => void;
+  removeBooking: (id: string) => void;
+  updateBookingStatus: (id: string, status: ActiveBooking['status'], eta?: string) => void;
+  selectedService: BookingService;
+  setSelectedService: (service: BookingService) => void;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -87,6 +105,13 @@ export const AppContext = createContext<AppContextType>({
   goBack: () => {},
   activeTab: 'doctor',
   setActiveTab: () => {},
+  activeBookings: [],
+  addBooking: () => {},
+  removeBooking: () => {},
+  updateBookingStatus: () => {},
+  selectedService: 'doctor',
+  setSelectedService: () => {},
 });
 
 export const useAppContext = () => useContext(AppContext);
+

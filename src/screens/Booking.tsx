@@ -5,16 +5,42 @@ import { useAppContext } from '../store';
 import { MapPin, Phone, Star, FileText, CheckCircle2, Navigation, Clock, ShieldCheck, Download, MessageSquare, Check } from 'lucide-react';
 
 export const ConfirmLocation = () => {
-  const { navigate, goBack } = useAppContext();
+  const { navigate, goBack, selectedService } = useAppContext();
   const [selectedReason, setSelectedReason] = useState<string>('');
   const [customReason, setCustomReason] = useState<string>('');
+
+  const config: Record<string, { text: string; button: string; reasons: string[] }> = {
+    doctor: {
+      text: "confirm the address where the doctor should visit.",
+      button: "Confirm & Search Doctors",
+      reasons: ['Fever', 'Headache', 'Stomach Ache', 'Cold & Cough', 'Body Pain', 'General Checkup']
+    },
+    nurse: {
+      text: "confirm the address where the nurse should visit.",
+      button: "Confirm & Search Nurses",
+      reasons: ['Wound Dressing', 'Injection', 'Post-Surgical Care', 'Elderly Assistance', 'Vital Monitoring', 'General Follow-up']
+    },
+    physio: {
+      text: "confirm the address where the physiotherapist should visit.",
+      button: "Confirm & Search Physio",
+      reasons: ['Back Pain', 'Sports Injury Rehab', 'Post-Surgery Rehab', 'Joint Stiffness', 'Posture Correction', 'Neuromuscular Rehab']
+    }
+  };
+
+  const currentConfig = config[selectedService] || config.doctor;
+
+  const handleNext = () => {
+    if (selectedService === 'nurse') navigate('SearchingNurse');
+    else if (selectedService === 'physio') navigate('SearchingPhysio');
+    else navigate('SearchingDoctor');
+  };
 
   return (
     <ScreenWrapper className="bg-background">
       <TopBar title="Confirm Location" onBack={goBack} />
 
       <div className="px-6 py-6 flex flex-col flex-1 pb-24">
-        <p className="text-gray-500 mb-6">Please confirm the address where the doctor should visit.</p>
+        <p className="text-gray-500 mb-6">Please {currentConfig.text}</p>
 
         <div className="h-48 bg-gray-200 rounded-2xl mb-6 overflow-hidden relative border border-gray-200 shrink-0">
           <img src="https://staticmapmaker.com/img/google-placeholder.png" alt="Map" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -48,7 +74,7 @@ export const ConfirmLocation = () => {
           <div>
             <h4 className="text-sm font-semibold text-gray-900 mb-3">Reason for Visit</h4>
             <div className="flex flex-wrap gap-2 mb-3">
-              {['Fever', 'Headache', 'Stomach Ache', 'Cold & Cough', 'Body Pain', 'General Checkup'].map((item) => (
+              {currentConfig.reasons.map((item) => (
                 <button
                   key={item}
                   onClick={() => {
@@ -82,10 +108,10 @@ export const ConfirmLocation = () => {
 
         <div className="mt-8 shrink-0">
           <Button
-            onClick={() => navigate('SearchingDoctor')}
+            onClick={handleNext}
             disabled={!selectedReason && !customReason.trim()}
           >
-            Confirm & Search Doctors
+            {currentConfig.button}
           </Button>
         </div>
       </div>
@@ -231,7 +257,7 @@ export const DoctorAccepted = () => {
 };
 
 export const Payment = () => {
-  const { navigate, goBack } = useAppContext();
+  const { navigate, goBack, addBooking, selectedService } = useAppContext();
 
   return (
     <ScreenWrapper className="bg-background">
@@ -266,29 +292,57 @@ export const Payment = () => {
         </div>
 
         <div className="mt-8">
-          <Button onClick={() => navigate('DoctorEnRoute')}>Pay Securely</Button>
+          <Button onClick={() => {
+            if (selectedService === 'nurse') {
+              addBooking({
+                id: 'nurse-1',
+                type: 'nurse',
+                providerName: 'Nurse Priya S.',
+                status: 'enroute',
+                eta: '18 mins',
+                icon: '💉'
+              });
+              navigate('NurseEnRoute');
+            } else if (selectedService === 'physio') {
+              addBooking({
+                id: 'physio-1',
+                type: 'physio',
+                providerName: 'Vikram PT',
+                status: 'enroute',
+                eta: '22 mins',
+                icon: '🧘'
+              });
+              navigate('PhysioEnRoute');
+            } else {
+              addBooking({
+                id: 'doctor-1',
+                type: 'doctor',
+                providerName: 'Dr. Sarah Jenkins',
+                status: 'enroute',
+                eta: '12 mins',
+                icon: '🩺'
+              });
+              navigate('DoctorEnRoute');
+            }
+          }}>Pay Securely</Button>
         </div>
+
       </div>
     </ScreenWrapper>
   );
 };
+
+import { AnimatedMap } from '../components/Tracking';
 
 export const DoctorEnRoute = () => {
   const { navigate } = useAppContext();
 
   return (
     <ScreenWrapper className="bg-background relative">
-      <div className="absolute inset-0 z-0 bg-gray-200">
-        {/* Map Background */}
-        <img src="https://developers.google.com/static/maps/documentation/maps-static/images/map-warning.png" alt="Map" className="w-full h-full object-cover opacity-80" referrerPolicy="no-referrer" />
-
-        {/* Route Line Simulation */}
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 800" fill="none">
-          <path d="M200 600 Q 150 400 250 200" stroke="#0F3D73" strokeWidth="6" strokeLinecap="round" strokeDasharray="10 10" className="animate-[dash_20s_linear_infinite]" />
-          <circle cx="200" cy="600" r="8" fill="#1FA97A" />
-          <circle cx="250" cy="200" r="12" fill="#0F3D73" />
-        </svg>
+      <div className="absolute inset-0 z-0">
+        <AnimatedMap type="doctor" />
       </div>
+
 
       <div className="absolute top-0 w-full p-6 z-10 bg-gradient-to-b from-black/50 to-transparent">
         <div className="bg-white/90 backdrop-blur-md rounded-2xl p-4 flex items-center justify-between shadow-lg">

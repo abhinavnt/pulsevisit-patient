@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { AnimatePresence } from 'motion/react';
-import { AppContext, Screen } from './store';
+import { AppContext, Screen, ActiveBooking } from './store';
 
 import { Splash, Permission, Auth, ProfileCompletion } from './screens/Onboarding';
 import { Home, MemberManagement, AddressSelection, ConsultationHistory, Profile } from './screens/Main';
 import { ConfirmLocation, SearchingDoctor, DoctorAccepted, Payment, DoctorEnRoute, OTPVerification, ConsultationOngoing, EndConsultationOTP, PrescriptionUploaded, RatingFeedback } from './screens/Booking';
-import { NurseBooking, SearchingNurse, NurseAccepted, NurseEnRoute, MedicineRequest, MedicineOrderConfirmed, AmbulanceRequest, SearchingAmbulance, AmbulanceEnRoute, PhysioBooking, SearchingPhysio, PhysioAccepted, PhysioEnRoute } from './screens/PulseCare';
+import { NurseBooking, SearchingNurse, NurseAccepted, NurseEnRoute, MedicineRequest, MedicineOrderConfirmed, MedicineTracking, AmbulanceRequest, SearchingAmbulance, AmbulanceEnRoute, PhysioBooking, SearchingPhysio, PhysioAccepted, PhysioEnRoute } from './screens/PulseCare';
 import { LabTestBooking, LabTestConfirm, SearchingPhlebotomist, PhlebotomistEnRoute, LabResults, PsychologistBooking, SearchingPsychologist, PsychologistAccepted, PsychologistSession, OnlineCounseling, CounselorMatched, CounselingSession } from './screens/MoreCare';
 import { DietitianBooking, SearchingDietitian, DietitianAccepted, DietitianSession, VaccinationBooking, SearchingVaccinator, VaccinatorEnRoute, EquipmentRental, EquipmentOrderConfirmed, SOSAlert, CarePackages } from './screens/ExtraCare';
 import { CarePlanRecommended, CarePlanReview, CarePlanCheckout, CarePlanConfirmed } from './screens/CarePlan';
@@ -14,6 +14,8 @@ export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('Splash');
   const [history, setHistory] = useState<Screen[]>([]);
   const [activeTab, setActiveTab] = useState<'doctor' | 'pulsecare'>('doctor');
+  const [activeBookings, setActiveBookings] = useState<ActiveBooking[]>([]);
+  const [selectedService, setSelectedService] = useState<any>('doctor');
 
   const navigate = (screen: Screen) => {
     setHistory((prev) => [...prev, currentScreen]);
@@ -27,6 +29,25 @@ export default function App() {
       setCurrentScreen(prevScreen);
     }
   };
+
+  const addBooking = (booking: ActiveBooking) => {
+    setActiveBookings(prev => {
+      // Avoid duplicate IDs
+      if (prev.some(b => b.id === booking.id)) return prev;
+      return [...prev, booking];
+    });
+  };
+
+  const removeBooking = (id: string) => {
+    setActiveBookings(prev => prev.filter(b => b.id !== id));
+  };
+
+  const updateBookingStatus = (id: string, status: ActiveBooking['status'], eta?: string) => {
+    setActiveBookings(prev => prev.map(b => 
+      b.id === id ? { ...b, status, ...(eta ? { eta } : {}) } : b
+    ));
+  };
+
 
   const renderScreen = () => {
     switch (currentScreen) {
@@ -57,6 +78,7 @@ export default function App() {
       // Pulse Care — Medicine
       case 'MedicineRequest': return <MedicineRequest key="MedicineRequest" />;
       case 'MedicineOrderConfirmed': return <MedicineOrderConfirmed key="MedicineOrderConfirmed" />;
+      case 'MedicineTracking': return <MedicineTracking key="MedicineTracking" />;
       // Pulse Care — Ambulance
       case 'AmbulanceRequest': return <AmbulanceRequest key="AmbulanceRequest" />;
       case 'SearchingAmbulance': return <SearchingAmbulance key="SearchingAmbulance" />;
@@ -106,8 +128,13 @@ export default function App() {
   };
 
   return (
-    <AppContext.Provider value={{ currentScreen, navigate, goBack, activeTab, setActiveTab }}>
+    <AppContext.Provider value={{ 
+      currentScreen, navigate, goBack, activeTab, setActiveTab, 
+      activeBookings, addBooking, removeBooking, updateBookingStatus,
+      selectedService, setSelectedService
+    }}>
       <div className="min-h-screen bg-gray-200 flex justify-center sm:items-center sm:p-4">
+
         <div className="w-full sm:max-w-[400px] h-[100dvh] sm:h-[850px] bg-background sm:rounded-[2.5rem] relative overflow-hidden flex flex-col">
           <AnimatePresence mode="wait">
             {renderScreen()}

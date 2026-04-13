@@ -169,12 +169,23 @@ export const LabTestConfirm = () => {
 // ─────────────────────────────────────────────────────────────
 
 export const SearchingPhlebotomist = () => {
-  const { navigate, goBack } = useAppContext();
+  const { navigate, goBack, addBooking } = useAppContext();
 
   useEffect(() => {
-    const timer = setTimeout(() => navigate('PhlebotomistEnRoute'), 3000);
+    const timer = setTimeout(() => {
+      addBooking({
+        id: 'lab-1',
+        type: 'lab',
+        providerName: 'Anjali (Lab Tech)',
+        status: 'enroute',
+        eta: '15 mins',
+        icon: '🔬'
+      });
+      navigate('PhlebotomistEnRoute');
+    }, 3000);
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [navigate, addBooking]);
+
 
   return (
     <ScreenWrapper className="bg-white items-center justify-center relative overflow-hidden">
@@ -205,19 +216,17 @@ export const SearchingPhlebotomist = () => {
 // PHLEBOTOMIST EN ROUTE
 // ─────────────────────────────────────────────────────────────
 
+import { AnimatedMap } from '../components/Tracking';
+
 export const PhlebotomistEnRoute = () => {
   const { navigate } = useAppContext();
 
   return (
     <ScreenWrapper className="bg-background relative">
-      <div className="absolute inset-0 z-0 bg-gray-200">
-        <img src="https://developers.google.com/static/maps/documentation/maps-static/images/map-warning.png" alt="Map" className="w-full h-full object-cover opacity-80" referrerPolicy="no-referrer" />
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 800" fill="none">
-          <path d="M200 600 Q 160 390 240 200" stroke="#0D9488" strokeWidth="6" strokeLinecap="round" strokeDasharray="10 10" />
-          <circle cx="200" cy="600" r="8" fill="#1FA97A" />
-          <circle cx="240" cy="200" r="12" fill="#0D9488" />
-        </svg>
+      <div className="absolute inset-0 z-0">
+        <AnimatedMap type="lab" />
       </div>
+
 
       <div className="absolute top-0 w-full p-6 z-10 bg-gradient-to-b from-black/50 to-transparent">
         <div className="bg-white/90 backdrop-blur-md rounded-2xl p-4 flex items-center justify-between shadow-lg">

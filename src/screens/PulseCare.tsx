@@ -13,7 +13,7 @@ import {
 // ─────────────────────────────────────────────────────────────
 
 export const NurseBooking = () => {
-  const { navigate, goBack } = useAppContext();
+  const { navigate, goBack, setSelectedService } = useAppContext();
   const [bookingType, setBookingType] = useState<'onetime' | 'subscription'>('onetime');
   const [nurseType, setNurseType] = useState('');
   const [days, setDays] = useState(7);
@@ -119,7 +119,7 @@ export const NurseBooking = () => {
         </div>
 
         <div className="mt-auto pt-4">
-          <Button onClick={() => navigate('ConfirmLocation')} disabled={!canContinue}>
+          <Button onClick={() => { setSelectedService('nurse'); navigate('ConfirmLocation'); }} disabled={!canContinue}>
             Confirm & Choose Location
           </Button>
         </div>
@@ -133,12 +133,22 @@ export const NurseBooking = () => {
 // ─────────────────────────────────────────────────────────────
 
 export const SearchingNurse = () => {
-  const { navigate, goBack } = useAppContext();
+  const { navigate, goBack, addBooking } = useAppContext();
 
   useEffect(() => {
-    const timer = setTimeout(() => navigate('NurseAccepted'), 3000);
+    const timer = setTimeout(() => {
+      addBooking({
+        id: 'nurse-1',
+        type: 'nurse',
+        providerName: 'Nurse Priya S.',
+        status: 'enroute',
+        eta: '18 mins',
+        icon: '💉'
+      });
+      navigate('NurseAccepted');
+    }, 3000);
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [navigate, addBooking]);
 
   return (
     <ScreenWrapper className="bg-white items-center justify-center relative overflow-hidden">
@@ -274,19 +284,26 @@ export const NurseAccepted = () => {
 // NURSE EN ROUTE
 // ─────────────────────────────────────────────────────────────
 
+import { AnimatedMap } from '../components/Tracking';
+
 export const NurseEnRoute = () => {
-  const { navigate } = useAppContext();
+  const { navigate, updateBookingStatus } = useAppContext();
+
+  useEffect(() => {
+    // Simulate finding progress
+    const timer = setTimeout(() => {
+       updateBookingStatus('nurse-1', 'arrived', '1 min');
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [updateBookingStatus]);
 
   return (
     <ScreenWrapper className="bg-background relative">
-      <div className="absolute inset-0 z-0 bg-gray-200">
-        <img src="https://developers.google.com/static/maps/documentation/maps-static/images/map-warning.png" alt="Map" className="w-full h-full object-cover opacity-80" referrerPolicy="no-referrer" />
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 800" fill="none">
-          <path d="M200 600 Q 150 400 250 200" stroke="#0F3D73" strokeWidth="6" strokeLinecap="round" strokeDasharray="10 10" />
-          <circle cx="200" cy="600" r="8" fill="#1FA97A" />
-          <circle cx="250" cy="200" r="12" fill="#0F3D73" />
-        </svg>
+      <div className="absolute inset-0 z-0">
+        <AnimatedMap type="nurse" />
       </div>
+
+
 
       <div className="absolute top-0 w-full p-6 z-10 bg-gradient-to-b from-black/50 to-transparent">
         <div className="bg-white/90 backdrop-blur-md rounded-2xl p-4 flex items-center justify-between shadow-lg">
@@ -343,7 +360,7 @@ export const NurseEnRoute = () => {
 // ─────────────────────────────────────────────────────────────
 
 export const MedicineRequest = () => {
-  const { navigate, goBack } = useAppContext();
+  const { navigate, goBack, addBooking } = useAppContext();
   const [selectedSource, setSelectedSource] = useState<'upload' | 'autopull' | null>(null);
   const [uploaded, setUploaded] = useState(false);
 
@@ -456,10 +473,21 @@ export const MedicineRequest = () => {
         )}
 
         <div className="mt-auto">
-          <Button onClick={() => navigate('MedicineOrderConfirmed')} disabled={!canOrder}>
+          <Button onClick={() => {
+            addBooking({
+              id: 'med-1',
+              type: 'medicine',
+              providerName: 'Pulse Pharmacy',
+              status: 'ordered',
+              eta: '45 mins',
+              icon: '💊'
+            });
+            navigate('MedicineOrderConfirmed');
+          }} disabled={!canOrder}>
             Place Order
           </Button>
         </div>
+
       </div>
     </ScreenWrapper>
   );
@@ -515,8 +543,123 @@ export const MedicineOrderConfirmed = () => {
           </p>
         </div>
 
-        <div className="mt-8">
-          <Button onClick={() => navigate('Home')}>Back to Home</Button>
+        <div className="mt-8 flex flex-col gap-3">
+          <Button onClick={() => navigate('MedicineTracking')}>Track Order</Button>
+          <Button variant="outline" onClick={() => navigate('Home')}>Back to Home</Button>
+        </div>
+      </div>
+    </ScreenWrapper>
+  );
+};
+
+export const MedicineTracking = () => {
+  const { goBack, activeBookings, updateBookingStatus } = useAppContext();
+  const order = activeBookings.find(b => b.type === 'medicine');
+
+  // Simulation of status updates
+  useEffect(() => {
+    if (!order) return;
+    
+    let timer: any;
+    if (order.status === 'ordered') {
+      timer = setTimeout(() => updateBookingStatus(order.id, 'packed'), 5000);
+    } else if (order.status === 'packed') {
+      timer = setTimeout(() => updateBookingStatus(order.id, 'out_for_delivery', '15 mins'), 5000);
+    }
+    
+    return () => clearTimeout(timer);
+  }, [order?.status, order?.id, updateBookingStatus]);
+
+  const steps = [
+    { title: 'Ordered', status: 'ordered', icon: '📝', desc: 'Order received by Pulse Pharmacy' },
+    { title: 'Packed', status: 'packed', icon: '📦', desc: 'Medicines verified and packed' },
+    { title: 'Out for Delivery', status: 'out_for_delivery', icon: '🛵', desc: 'Rider is on the way to you' },
+  ];
+
+  const currentStepIndex = steps.findIndex(s => s.status === order?.status);
+
+  return (
+    <ScreenWrapper className="bg-background">
+      <TopBar title="Track Order" onBack={goBack} />
+
+      <div className="px-6 py-6 flex flex-col flex-1 pb-24">
+        {/* Order Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Order ID</p>
+            <p className="text-lg font-bold text-gray-900">#MED-8472</p>
+          </div>
+          <div className="text-right">
+            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Estimated Delivery</p>
+            <p className="text-lg font-bold text-secondary">{order?.eta || '45-60 mins'}</p>
+          </div>
+        </div>
+
+        {/* Tracking Timeline */}
+        <div className="relative mb-10 pl-4">
+          {/* Vertical Line */}
+          <div className="absolute left-[20px] top-6 bottom-6 w-0.5 bg-gray-100" />
+          
+          <div className="flex flex-col gap-10">
+            {steps.map((step, index) => {
+              const isCompleted = index < currentStepIndex;
+              const isCurrent = index === currentStepIndex;
+              const isPending = index > currentStepIndex;
+
+              return (
+                <div key={step.title} className="flex gap-6 relative z-10">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 shadow-sm ${
+                    isCompleted ? 'bg-secondary border-secondary text-white' : 
+                    isCurrent ? 'bg-white border-secondary text-secondary scale-110 shadow-md ring-4 ring-green-50' : 
+                    'bg-white border-gray-200 text-gray-300'
+                  }`}>
+                    {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <span className="text-xl">{step.icon}</span>}
+                  </div>
+                  <div className="flex-1 pt-1">
+                    <h4 className={`text-sm font-bold transition-all ${isPending ? 'text-gray-300' : 'text-gray-900'}`}>
+                      {step.title}
+                    </h4>
+                    <p className={`text-xs mt-1 transition-all ${isPending ? 'text-gray-300' : 'text-gray-500'}`}>
+                      {step.desc}
+                    </p>
+                    {isCurrent && (
+                      <motion.div 
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-lg"
+                      >
+                        <div className="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse" />
+                        <span className="text-[10px] font-bold text-secondary uppercase tracking-wider">In Progress</span>
+                      </motion.div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Delivery Details */}
+        <Card className="p-5 mb-6">
+           <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center shrink-0">
+                <MapPin className="w-5 h-5 text-gray-400" />
+              </div>
+              <div className="flex-1">
+                 <p className="text-xs text-gray-500 font-medium mb-1">Delivery Address</p>
+                 <p className="text-sm font-bold text-gray-900 leading-tight">123 Health Ave, Medical District, NY 10001</p>
+              </div>
+           </div>
+        </Card>
+
+        {/* Support */}
+        <div className="mt-auto flex gap-4">
+          <Button variant="outline" className="flex-1 gap-2 border-gray-200 text-gray-700 bg-white">
+            <MessageSquare className="w-4 h-4 text-primary" /> Chat
+          </Button>
+          <Button variant="outline" className="flex-1 gap-2 border-gray-200 text-gray-700 bg-white">
+            <Phone className="w-4 h-4 text-secondary" /> Call
+          </Button>
         </div>
       </div>
     </ScreenWrapper>
@@ -620,12 +763,23 @@ export const AmbulanceRequest = () => {
 // ─────────────────────────────────────────────────────────────
 
 export const SearchingAmbulance = () => {
-  const { navigate, goBack } = useAppContext();
+  const { navigate, goBack, addBooking } = useAppContext();
 
   useEffect(() => {
-    const timer = setTimeout(() => navigate('AmbulanceEnRoute'), 3000);
+    const timer = setTimeout(() => {
+      addBooking({
+        id: 'amb-1',
+        type: 'ambulance',
+        providerName: 'Apollo ALS Ambulance',
+        status: 'enroute',
+        eta: '8 mins',
+        icon: '🚑'
+      });
+      navigate('AmbulanceEnRoute');
+    }, 3000);
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [navigate, addBooking]);
+
 
   return (
     <ScreenWrapper className="bg-red-600 text-white items-center justify-center relative overflow-hidden">
@@ -670,14 +824,10 @@ export const AmbulanceEnRoute = () => {
 
   return (
     <ScreenWrapper className="bg-background relative">
-      <div className="absolute inset-0 z-0 bg-gray-200">
-        <img src="https://developers.google.com/static/maps/documentation/maps-static/images/map-warning.png" alt="Map" className="w-full h-full object-cover opacity-80" referrerPolicy="no-referrer" />
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 800" fill="none">
-          <path d="M200 600 Q 120 350 240 180" stroke="#DC2626" strokeWidth="8" strokeLinecap="round" strokeDasharray="12 8" />
-          <circle cx="200" cy="600" r="10" fill="#1FA97A" />
-          <circle cx="240" cy="180" r="14" fill="#DC2626" />
-        </svg>
+      <div className="absolute inset-0 z-0">
+        <AnimatedMap type="ambulance" />
       </div>
+
 
       <div className="absolute top-0 w-full p-6 z-10 bg-gradient-to-b from-black/60 to-transparent">
         <div className="bg-red-500 rounded-2xl p-4 flex items-center justify-between shadow-lg">
@@ -732,7 +882,7 @@ export const AmbulanceEnRoute = () => {
 // ─────────────────────────────────────────────────────────────
 
 export const PhysioBooking = () => {
-  const { navigate, goBack } = useAppContext();
+  const { navigate, goBack, setSelectedService } = useAppContext();
   const [sessionType, setSessionType] = useState<'onetime' | 'plan'>('onetime');
   const [therapyType, setTherapyType] = useState('');
   const [sessions, setSessions] = useState(5);
@@ -837,7 +987,7 @@ export const PhysioBooking = () => {
 
         <div className="mt-auto pt-4">
           <Button
-            onClick={() => navigate('ConfirmLocation')}
+            onClick={() => { setSelectedService('physio'); navigate('ConfirmLocation'); }}
             disabled={therapyType === ''}
             className="bg-amber-500 hover:bg-amber-600 active:bg-amber-700"
           >
@@ -854,12 +1004,15 @@ export const PhysioBooking = () => {
 // ─────────────────────────────────────────────────────────────
 
 export const SearchingPhysio = () => {
-  const { navigate, goBack } = useAppContext();
+  const { navigate, goBack, addBooking } = useAppContext();
 
   useEffect(() => {
-    const timer = setTimeout(() => navigate('PhysioAccepted'), 3000);
+    const timer = setTimeout(() => {
+      navigate('PhysioAccepted');
+    }, 3000);
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [navigate, addBooking]);
+
 
   return (
     <ScreenWrapper className="bg-white items-center justify-center relative overflow-hidden">
@@ -1000,14 +1153,10 @@ export const PhysioEnRoute = () => {
 
   return (
     <ScreenWrapper className="bg-background relative">
-      <div className="absolute inset-0 z-0 bg-gray-200">
-        <img src="https://developers.google.com/static/maps/documentation/maps-static/images/map-warning.png" alt="Map" className="w-full h-full object-cover opacity-80" referrerPolicy="no-referrer" />
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 800" fill="none">
-          <path d="M200 600 Q 170 380 230 210" stroke="#F59E0B" strokeWidth="6" strokeLinecap="round" strokeDasharray="10 10" />
-          <circle cx="200" cy="600" r="8" fill="#1FA97A" />
-          <circle cx="230" cy="210" r="12" fill="#F59E0B" />
-        </svg>
+      <div className="absolute inset-0 z-0">
+        <AnimatedMap type="physio" />
       </div>
+
 
       <div className="absolute top-0 w-full p-6 z-10 bg-gradient-to-b from-black/50 to-transparent">
         <div className="bg-white/90 backdrop-blur-md rounded-2xl p-4 flex items-center justify-between shadow-lg">

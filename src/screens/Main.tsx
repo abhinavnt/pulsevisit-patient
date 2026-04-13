@@ -1,11 +1,11 @@
 import React from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Button, Card, Input, ScreenWrapper, TopBar } from '../components/UI';
 import { useAppContext } from '../store';
 import { MapPin, UserPlus, FileText, ChevronRight, Search, Clock, CheckCircle2, XCircle, User, Calendar, Home as HomeIcon, Users, HelpCircle, UserCircle, Settings, CreditCard, Bell, LogOut, ChevronLeft, Zap, AlertTriangle } from 'lucide-react';
 
 export const Home = () => {
-  const { navigate, activeTab, setActiveTab } = useAppContext();
+  const { navigate, activeTab, setActiveTab, activeBookings, setSelectedService } = useAppContext();
   const [showMoreServices, setShowMoreServices] = React.useState(false);
   // activeTab and setActiveTab now come from global context (App.tsx)
   // so the selected tab is preserved when navigating back from a service screen
@@ -138,27 +138,53 @@ export const Home = () => {
         </div>
       </div>
 
-      {/* Active Booking Tracker */}
-      <motion.div
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mx-6 -mt-3 mb-2 rounded-2xl p-4 border flex items-center gap-3 cursor-pointer bg-blue-50 border-blue-200 shadow-sm"
-        onClick={() => navigate('NurseEnRoute')}
-      >
-        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-xl shrink-0">
-          🩺
-        </div>
-        <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <p className="text-sm font-bold text-gray-900">Nurse Visit</p>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-blue-600 bg-blue-100">En Route</span>
-          </div>
-          <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
-            <Clock className="w-3 h-3" /> ETA: 12 mins
-          </p>
-        </div>
-        <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
-      </motion.div>
+      {/* Dynamic Booking Tracker */}
+      <AnimatePresence>
+        {activeBookings.length > 0 && (
+          <motion.div
+            key={activeBookings[0].id}
+            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginTop: -12 }}
+            exit={{ opacity: 0, height: 0, marginTop: 0 }}
+            className="mx-6 mb-2 overflow-hidden"
+          >
+            <div 
+              className="rounded-2xl p-4 border flex items-center gap-3 cursor-pointer bg-blue-50 border-blue-200 shadow-sm"
+              onClick={() => {
+                const b = activeBookings[0];
+                if (b.type === 'nurse') navigate('NurseEnRoute');
+                else if (b.type === 'doctor') navigate('DoctorEnRoute');
+                else if (b.type === 'ambulance') navigate('AmbulanceEnRoute');
+                else if (b.type === 'lab') navigate('PhlebotomistEnRoute');
+                else if (b.type === 'medicine') navigate('MedicineTracking');
+                else if (b.type === 'physio') navigate('PhysioEnRoute');
+              }}
+            >
+              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-xl shrink-0">
+                {activeBookings[0].icon}
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-bold text-gray-900">{activeBookings[0].providerName}</p>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                    ['enroute', 'out_for_delivery'].includes(activeBookings[0].status) ? 'text-blue-600 bg-blue-100' : 
+                    ['ongoing', 'arrived'].includes(activeBookings[0].status) ? 'text-green-600 bg-green-100' :
+                    ['ordered', 'packed'].includes(activeBookings[0].status) ? 'text-secondary bg-green-50' : 
+                    'text-amber-600 bg-amber-100'
+                  }`}>
+                    {activeBookings[0].status.replace(/_/g, ' ').charAt(0).toUpperCase() + activeBookings[0].status.replace(/_/g, ' ').slice(1)}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
+                   <Clock className="w-3 h-3" /> {activeBookings[0].eta ? `ETA: ${activeBookings[0].eta}` : 'Status updated'}
+                </p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
 
       {/* Care Plan Banner — Visible after consultation */}
       <div className="px-6 mb-2">
@@ -212,7 +238,7 @@ export const Home = () => {
             <div className="grid grid-cols-2 gap-4 mb-8">
               <Card
                 className="flex flex-col items-center justify-center p-6 gap-4 border-2 border-transparent hover:border-secondary/30 transition-colors"
-                onClick={() => navigate('ConfirmLocation')}
+                onClick={() => { setSelectedService('doctor'); navigate('ConfirmLocation'); }}
               >
                 <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center">
                   <User className="w-8 h-8 text-primary" />
@@ -222,7 +248,7 @@ export const Home = () => {
 
               <Card
                 className="flex flex-col items-center justify-center p-6 gap-4 border-2 border-transparent hover:border-secondary/30 transition-colors"
-                onClick={() => navigate('MemberManagement')}
+                onClick={() => { setSelectedService('doctor'); navigate('MemberManagement'); }}
               >
                 <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center">
                   <UserPlus className="w-8 h-8 text-secondary" />
