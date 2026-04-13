@@ -2,11 +2,12 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Button, Card, Input, ScreenWrapper, TopBar } from '../components/UI';
 import { useAppContext } from '../store';
-import { MapPin, UserPlus, FileText, ChevronRight, Search, Clock, CheckCircle2, XCircle, User, Calendar, Home as HomeIcon, Users, HelpCircle, UserCircle, Settings, CreditCard, Bell, LogOut, ChevronLeft } from 'lucide-react';
+import { MapPin, UserPlus, FileText, ChevronRight, Search, Clock, CheckCircle2, XCircle, User, Calendar, Home as HomeIcon, Users, HelpCircle, UserCircle, Settings, CreditCard, Bell, LogOut, ChevronLeft, Zap, AlertTriangle } from 'lucide-react';
 
 export const Home = () => {
-  const { navigate } = useAppContext();
-  const [activeTab, setActiveTab] = React.useState<'doctor' | 'pulsecare'>('doctor');
+  const { navigate, activeTab, setActiveTab } = useAppContext();
+  // activeTab and setActiveTab now come from global context (App.tsx)
+  // so the selected tab is preserved when navigating back from a service screen
 
   const pulseServices = [
     {
@@ -45,6 +46,51 @@ export const Home = () => {
       bg: 'bg-amber-50',
       border: 'hover:border-amber-200',
     },
+    {
+      id: 'labtest',
+      icon: '🔬',
+      title: 'Lab Test',
+      subtitle: 'Home collection',
+      screen: 'LabTestBooking' as const,
+      bg: 'bg-teal-50',
+      border: 'hover:border-teal-200',
+    },
+    {
+      id: 'psychologist',
+      icon: '🧠',
+      title: 'Psychologist',
+      subtitle: 'Clinical therapy',
+      screen: 'PsychologistBooking' as const,
+      bg: 'bg-violet-50',
+      border: 'hover:border-violet-200',
+    },
+    {
+      id: 'dietitian',
+      icon: '🥗',
+      title: 'Dietitian',
+      subtitle: 'Nutrition consult',
+      screen: 'DietitianBooking' as const,
+      bg: 'bg-green-50',
+      border: 'hover:border-green-200',
+    },
+    {
+      id: 'vaccination',
+      icon: '💉',
+      title: 'Vaccination',
+      subtitle: 'At-home jabs',
+      screen: 'VaccinationBooking' as const,
+      bg: 'bg-sky-50',
+      border: 'hover:border-sky-200',
+    },
+    {
+      id: 'equipment',
+      icon: '🛏️',
+      title: 'Equipment',
+      subtitle: 'Rental delivery',
+      screen: 'EquipmentRental' as const,
+      bg: 'bg-orange-50',
+      border: 'hover:border-orange-200',
+    },
   ];
 
   return (
@@ -56,8 +102,21 @@ export const Home = () => {
             <p className="text-blue-200 text-sm font-medium">Hello,</p>
             <h1 className="text-2xl font-bold tracking-tight">John Doe</h1>
           </div>
-          <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm cursor-pointer" onClick={() => navigate('Profile')}>
-            <UserCircle className="w-6 h-6 text-white" />
+          <div className="flex items-center gap-2">
+            {/* SOS Button */}
+            <button
+              onClick={() => navigate('SOSAlert')}
+              className="flex items-center gap-1.5 bg-red-500 hover:bg-red-600 active:scale-95 transition-all px-3 py-2 rounded-full shadow-lg shadow-red-900/30"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+              </span>
+              <span className="text-white text-xs font-bold tracking-wider">SOS</span>
+            </button>
+            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm cursor-pointer" onClick={() => navigate('Profile')}>
+              <UserCircle className="w-6 h-6 text-white" />
+            </div>
           </div>
         </div>
 
@@ -77,6 +136,28 @@ export const Home = () => {
           <ChevronRight className="w-5 h-5 text-white shrink-0" />
         </div>
       </div>
+
+      {/* Active Booking Tracker */}
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mx-6 -mt-3 mb-2 rounded-2xl p-4 border flex items-center gap-3 cursor-pointer bg-blue-50 border-blue-200 shadow-sm"
+        onClick={() => navigate('NurseEnRoute')}
+      >
+        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-xl shrink-0">
+          🩺
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-bold text-gray-900">Nurse Visit</p>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-blue-600 bg-blue-100">En Route</span>
+          </div>
+          <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
+            <Clock className="w-3 h-3" /> ETA: 12 mins
+          </p>
+        </div>
+        <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
+      </motion.div>
 
       <div className="px-6 py-6">
         {/* Tab Switcher */}
@@ -164,7 +245,7 @@ export const Home = () => {
                 <Card
                   key={svc.id}
                   className={`flex flex-col items-center justify-center p-5 gap-3 border-2 border-transparent ${svc.border} transition-colors cursor-pointer`}
-                  onClick={() => navigate(svc.screen)}
+                  onClick={() => { setActiveTab('pulsecare'); navigate(svc.screen); }}
                 >
                   <div className={`w-14 h-14 ${svc.bg} rounded-full flex items-center justify-center text-2xl`}>
                     {svc.icon}
@@ -207,6 +288,20 @@ export const Home = () => {
                 <Calendar className="w-3 h-3" /> Oct 28, 2023 • Session 2 of 5
               </p>
             </Card>
+
+            {/* Care Packages Banner */}
+            <button
+              onClick={() => navigate('CarePackages')}
+              className="w-full mt-5 bg-gradient-to-r from-primary to-secondary rounded-2xl p-4 flex items-center justify-between text-left active:scale-[0.98] transition-transform"
+            >
+              <div>
+                <p className="text-white font-bold text-sm">💊 Care Packages</p>
+                <p className="text-white/80 text-xs mt-1">Bundled plans — save up to 35%</p>
+              </div>
+              <div className="bg-white/20 rounded-xl px-3 py-1.5">
+                <span className="text-white text-xs font-bold">View Plans</span>
+              </div>
+            </button>
           </motion.div>
         )}
 
