@@ -522,8 +522,8 @@ export const RatingFeedback = () => {
       </div>
 
       <div className="mt-auto pt-8">
-        <Button onClick={() => navigate('Home')} disabled={rating === 0}>Submit Feedback</Button>
-        <button onClick={() => navigate('Home')} className="w-full text-gray-500 font-medium py-4 mt-2 hover:text-primary transition-colors">
+        <Button onClick={() => navigate('CarePlanRecommended')} disabled={rating === 0}>Submit Feedback</Button>
+        <button onClick={() => navigate('CarePlanRecommended')} className="w-full text-gray-500 font-medium py-4 mt-2 hover:text-primary transition-colors">
           Skip for now
         </button>
       </div>

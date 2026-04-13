@@ -66,7 +66,12 @@ export type Screen =
   | 'EquipmentOrderConfirmed'
   // SOS & Extras
   | 'SOSAlert'
-  | 'CarePackages';
+  | 'CarePackages'
+  // Post-Consultation Care Plan
+  | 'CarePlanRecommended'
+  | 'CarePlanReview'
+  | 'CarePlanCheckout'
+  | 'CarePlanConfirmed';
 
 interface AppContextType {
   currentScreen: Screen;

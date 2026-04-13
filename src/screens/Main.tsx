@@ -160,6 +160,28 @@ export const Home = () => {
         <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
       </motion.div>
 
+      {/* Care Plan Banner — Visible after consultation */}
+      <div className="px-6 mb-2">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5 }}
+          onClick={() => navigate('CarePlanRecommended')}
+          className="bg-gradient-to-r from-secondary to-green-600 rounded-[2rem] p-5 flex items-center gap-4 shadow-lg shadow-secondary/20 cursor-pointer active:scale-[0.98] transition-transform"
+        >
+          <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl shrink-0">
+            🩺
+          </div>
+          <div className="flex-1">
+            <h3 className="text-white font-bold text-sm">Your Care Plan is Ready</h3>
+            <p className="text-white/80 text-[11px] leading-tight mt-0.5">Recommended follow-ups based on your last consultation.</p>
+          </div>
+          <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
+            <ChevronRight className="w-4 h-4 text-white" />
+          </div>
+        </motion.div>
+      </div>
+
       <div className="px-6 py-6">
         {/* Tab Switcher */}
         <div className="bg-gray-100 rounded-2xl p-1 flex mb-6">

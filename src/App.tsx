@@ -8,6 +8,7 @@ import { ConfirmLocation, SearchingDoctor, DoctorAccepted, Payment, DoctorEnRout
 import { NurseBooking, SearchingNurse, NurseAccepted, NurseEnRoute, MedicineRequest, MedicineOrderConfirmed, AmbulanceRequest, SearchingAmbulance, AmbulanceEnRoute, PhysioBooking, SearchingPhysio, PhysioAccepted, PhysioEnRoute } from './screens/PulseCare';
 import { LabTestBooking, LabTestConfirm, SearchingPhlebotomist, PhlebotomistEnRoute, LabResults, PsychologistBooking, SearchingPsychologist, PsychologistAccepted, PsychologistSession, OnlineCounseling, CounselorMatched, CounselingSession } from './screens/MoreCare';
 import { DietitianBooking, SearchingDietitian, DietitianAccepted, DietitianSession, VaccinationBooking, SearchingVaccinator, VaccinatorEnRoute, EquipmentRental, EquipmentOrderConfirmed, SOSAlert, CarePackages } from './screens/ExtraCare';
+import { CarePlanRecommended, CarePlanReview, CarePlanCheckout, CarePlanConfirmed } from './screens/CarePlan';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('Splash');
@@ -95,6 +96,11 @@ export default function App() {
       // SOS & Extras
       case 'SOSAlert': return <SOSAlert key="SOSAlert" />;
       case 'CarePackages': return <CarePackages key="CarePackages" />;
+      // Post-Consultation Care Plan
+      case 'CarePlanRecommended': return <CarePlanRecommended key="CarePlanRecommended" />;
+      case 'CarePlanReview': return <CarePlanReview key="CarePlanReview" />;
+      case 'CarePlanCheckout': return <CarePlanCheckout key="CarePlanCheckout" />;
+      case 'CarePlanConfirmed': return <CarePlanConfirmed key="CarePlanConfirmed" />;
       default: return <Splash key="Splash" />;
     }
   };
