@@ -6,16 +6,24 @@ export const Button = ({
   variant = 'primary', 
   className = '', 
   onClick, 
-  disabled = false 
+  disabled = false,
+  size = 'md'
 }: { 
   children: React.ReactNode; 
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'custom'; 
   className?: string; 
   onClick?: () => void;
   disabled?: boolean;
+  size?: 'sm' | 'md' | 'lg';
 }) => {
-  const baseStyle = "w-full py-4 rounded-2xl font-semibold text-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2";
+  const baseStyle = "w-full rounded-2xl font-semibold transition-all active:scale-[0.98] flex items-center justify-center gap-2";
   
+  const sizeStyles = {
+    sm: "py-2.5 text-sm",
+    md: "py-4 text-lg",
+    lg: "py-5 text-xl",
+  };
+
   const variants = {
     primary: "bg-secondary text-white shadow-md shadow-secondary/20",
     secondary: "bg-primary text-white shadow-md shadow-primary/20",
@@ -27,7 +35,7 @@ export const Button = ({
   return (
     <motion.button 
       whileTap={{ scale: 0.98 }}
-      className={`${baseStyle} ${variants[variant]} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
+      className={`${baseStyle} ${sizeStyles[size]} ${variants[variant]} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
       onClick={onClick}
       disabled={disabled}
     >
@@ -108,9 +116,9 @@ export const ScreenWrapper = ({ children, className = '' }: { children: React.Re
   );
 };
 
-export const TopBar = ({ title, onBack }: { title: string; onBack?: () => void }) => {
+export const TopBar = ({ title, onBack, className = '' }: { title: string; onBack?: () => void; className?: string }) => {
   return (
-    <div className="flex items-center justify-between p-6 bg-background sticky top-0 z-10">
+    <div className={`flex items-center justify-between p-6 bg-background sticky top-0 z-10 ${className}`}>
       {onBack ? (
         <button onClick={onBack} className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm border border-gray-100 active:scale-95 transition-transform">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

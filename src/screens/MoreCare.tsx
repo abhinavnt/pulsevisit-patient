@@ -451,12 +451,22 @@ export const PsychologistBooking = () => {
 // ─────────────────────────────────────────────────────────────
 
 export const SearchingPsychologist = () => {
-  const { navigate, goBack } = useAppContext();
+  const { navigate, goBack, addBooking } = useAppContext();
 
   useEffect(() => {
-    const timer = setTimeout(() => navigate('PsychologistAccepted'), 3000);
+    const timer = setTimeout(() => {
+      addBooking({
+        id: 'psych-1',
+        type: 'doctor', // Using doctor as a fallback for psychologist icon/color
+        providerName: 'Dr. Meera Krishnan',
+        status: 'ongoing',
+        eta: 'Session starts now',
+        icon: '🧠'
+      });
+      navigate('PsychologistAccepted');
+    }, 3000);
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [navigate, addBooking]);
 
   return (
     <ScreenWrapper className="bg-white items-center justify-center relative overflow-hidden">
@@ -618,7 +628,7 @@ const COUNSELOR_TYPES = [
 ];
 
 export const OnlineCounseling = () => {
-  const { navigate, goBack } = useAppContext();
+  const { navigate, goBack, addBooking } = useAppContext();
   const [counselorType, setCounselorType] = useState('');
   const [format, setFormat] = useState<'video' | 'audio' | ''>('');
   const [timing, setTiming] = useState<'now' | 'schedule' | ''>('');
@@ -710,7 +720,17 @@ export const OnlineCounseling = () => {
 
         <div className="mt-auto pt-4">
           <Button
-            onClick={() => navigate('CounselorMatched')}
+            onClick={() => {
+              addBooking({
+                id: 'counsel-1',
+                type: 'doctor',
+                providerName: 'Arya S.',
+                status: 'ongoing',
+                eta: 'Connecting...',
+                icon: '💬'
+              });
+              navigate('CounselorMatched');
+            }}
             disabled={!canContinue}
             className="bg-pink-500 hover:bg-pink-600"
           >

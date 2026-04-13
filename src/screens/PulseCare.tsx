@@ -553,8 +553,9 @@ export const MedicineOrderConfirmed = () => {
 };
 
 export const MedicineTracking = () => {
-  const { goBack, activeBookings, updateBookingStatus } = useAppContext();
+  const { goBack, activeBookings, updateBookingStatus, navigate } = useAppContext();
   const order = activeBookings.find(b => b.type === 'medicine');
+  const [showMap, setShowMap] = useState(false);
 
   // Simulation of status updates
   useEffect(() => {
@@ -564,11 +565,17 @@ export const MedicineTracking = () => {
     if (order.status === 'ordered') {
       timer = setTimeout(() => updateBookingStatus(order.id, 'packed'), 5000);
     } else if (order.status === 'packed') {
-      timer = setTimeout(() => updateBookingStatus(order.id, 'out_for_delivery', '15 mins'), 5000);
+      timer = setTimeout(() => updateBookingStatus(order.id, 'out_for_delivery', '12 mins'), 5000);
     }
     
     return () => clearTimeout(timer);
   }, [order?.status, order?.id, updateBookingStatus]);
+
+  useEffect(() => {
+    if (order?.status === 'out_for_delivery') {
+      setShowMap(true);
+    }
+  }, [order?.status]);
 
   const steps = [
     { title: 'Ordered', status: 'ordered', icon: '📝', desc: 'Order received by Pulse Pharmacy' },
@@ -579,87 +586,137 @@ export const MedicineTracking = () => {
   const currentStepIndex = steps.findIndex(s => s.status === order?.status);
 
   return (
-    <ScreenWrapper className="bg-background">
-      <TopBar title="Track Order" onBack={goBack} />
+    <ScreenWrapper className="bg-background relative">
+      <div className={`absolute inset-0 z-0 transition-opacity duration-700 ${showMap ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <AnimatedMap type="medicine" />
+      </div>
 
-      <div className="px-6 py-6 flex flex-col flex-1 pb-24">
-        {/* Order Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Order ID</p>
-            <p className="text-lg font-bold text-gray-900">#MED-8472</p>
-          </div>
-          <div className="text-right">
-            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Estimated Delivery</p>
-            <p className="text-lg font-bold text-secondary">{order?.eta || '45-60 mins'}</p>
-          </div>
-        </div>
+      <div className="relative z-10 flex flex-col h-full">
+        <TopBar 
+          title="Track Order" 
+          onBack={goBack} 
+          className={showMap ? 'bg-white/80 backdrop-blur-md' : ''} 
+        />
 
-        {/* Tracking Timeline */}
-        <div className="relative mb-10 pl-4">
-          {/* Vertical Line */}
-          <div className="absolute left-[20px] top-6 bottom-6 w-0.5 bg-gray-100" />
-          
-          <div className="flex flex-col gap-10">
-            {steps.map((step, index) => {
-              const isCompleted = index < currentStepIndex;
-              const isCurrent = index === currentStepIndex;
-              const isPending = index > currentStepIndex;
-
-              return (
-                <div key={step.title} className="flex gap-6 relative z-10">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 shadow-sm ${
-                    isCompleted ? 'bg-secondary border-secondary text-white' : 
-                    isCurrent ? 'bg-white border-secondary text-secondary scale-110 shadow-md ring-4 ring-green-50' : 
-                    'bg-white border-gray-200 text-gray-300'
-                  }`}>
-                    {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <span className="text-xl">{step.icon}</span>}
+        <div className={`flex-1 flex flex-col px-6 py-6 ${showMap ? 'justify-end' : ''}`}>
+           {!showMap && (
+             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex-1">
+                {/* Order Header */}
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Order ID</p>
+                    <p className="text-lg font-bold text-gray-900">#MED-8472</p>
                   </div>
-                  <div className="flex-1 pt-1">
-                    <h4 className={`text-sm font-bold transition-all ${isPending ? 'text-gray-300' : 'text-gray-900'}`}>
-                      {step.title}
-                    </h4>
-                    <p className={`text-xs mt-1 transition-all ${isPending ? 'text-gray-300' : 'text-gray-500'}`}>
-                      {step.desc}
-                    </p>
-                    {isCurrent && (
-                      <motion.div 
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-lg"
-                      >
-                        <div className="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse" />
-                        <span className="text-[10px] font-bold text-secondary uppercase tracking-wider">In Progress</span>
-                      </motion.div>
-                    )}
+                  <div className="text-right">
+                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Estimated Delivery</p>
+                    <p className="text-lg font-bold text-secondary">{order?.eta || '45-60 mins'}</p>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
 
-        {/* Delivery Details */}
-        <Card className="p-5 mb-6">
-           <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center shrink-0">
-                <MapPin className="w-5 h-5 text-gray-400" />
-              </div>
-              <div className="flex-1">
-                 <p className="text-xs text-gray-500 font-medium mb-1">Delivery Address</p>
-                 <p className="text-sm font-bold text-gray-900 leading-tight">123 Health Ave, Medical District, NY 10001</p>
-              </div>
-           </div>
-        </Card>
+                {/* Tracking Timeline */}
+                <div className="relative mb-10 pl-4">
+                  <div className="absolute left-[20px] top-6 bottom-6 w-0.5 bg-gray-100" />
+                  <div className="flex flex-col gap-10">
+                    {steps.map((step, index) => {
+                      const isCompleted = index < currentStepIndex;
+                      const isCurrent = index === currentStepIndex;
+                      const isPending = index > currentStepIndex;
 
-        {/* Support */}
-        <div className="mt-auto flex gap-4">
-          <Button variant="outline" className="flex-1 gap-2 border-gray-200 text-gray-700 bg-white">
-            <MessageSquare className="w-4 h-4 text-primary" /> Chat
-          </Button>
-          <Button variant="outline" className="flex-1 gap-2 border-gray-200 text-gray-700 bg-white">
-            <Phone className="w-4 h-4 text-secondary" /> Call
-          </Button>
+                      return (
+                        <div key={step.title} className="flex gap-6 relative z-10">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 shadow-sm ${
+                            isCompleted ? 'bg-secondary border-secondary text-white' : 
+                            isCurrent ? 'bg-white border-secondary text-secondary scale-110 shadow-md ring-4 ring-green-50' : 
+                            'bg-white border-gray-200 text-gray-300'
+                          }`}>
+                            {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <span className="text-xl">{step.icon}</span>}
+                          </div>
+                          <div className="flex-1 pt-1">
+                            <h4 className={`text-sm font-bold transition-all ${isPending ? 'text-gray-300' : 'text-gray-900'}`}>
+                              {step.title}
+                            </h4>
+                            <p className={`text-xs mt-1 transition-all ${isPending ? 'text-gray-300' : 'text-gray-500'}`}>
+                              {step.desc}
+                            </p>
+                            {isCurrent && (
+                              <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-lg">
+                                <div className="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse" />
+                                <span className="text-[10px] font-bold text-secondary uppercase tracking-wider">In Progress</span>
+                              </motion.div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                
+                {/* Order Summary */}
+                <Card className="p-4 mb-6 bg-gray-50/50 border-gray-100">
+                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Order Items</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Amoxicillin 500mg (x10)</span>
+                      <span className="font-bold">₹240</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Paracetamol 650mg (x15)</span>
+                      <span className="font-bold">₹45</span>
+                    </div>
+                  </div>
+                </Card>
+             </motion.div>
+           )}
+
+           {/* Delivery Card (Always visible at bottom when out for delivery) */}
+           {order?.status === 'out_for_delivery' && (
+             <motion.div initial={{ y: 100 }} animate={{ y: 0 }} className="bg-white rounded-t-[2.5rem] shadow-[0_-15px_50px_rgba(0,0,0,0.15)] p-6 -mx-6 -mb-6 pb-10">
+                <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6" />
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 rounded-2xl bg-violet-100 flex items-center justify-center text-3xl">🛵</div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-gray-900">Rohan Kumar</h3>
+                    <p className="text-sm text-gray-500 font-medium">Pulse Delivery Partner</p>
+                    <div className="flex items-center gap-1 mt-1">
+                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                      <span className="text-xs font-bold text-gray-700">4.8</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center text-secondary"><Phone className="w-5 h-5" /></button>
+                    <button className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-primary"><MessageSquare className="w-5 h-5" /></button>
+                  </div>
+                </div>
+                <div className="bg-violet-50 rounded-2xl p-4 flex items-center justify-between">
+                   <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
+                        <Clock className="w-5 h-5 text-violet-600" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-violet-500 font-bold uppercase tracking-wider">Estimated Arrival</p>
+                        <p className="text-base font-bold text-gray-900">{order.eta}</p>
+                      </div>
+                   </div>
+                   <Button variant="outline" size="sm" className="bg-white border-violet-200 text-violet-600 h-9" onClick={() => setShowMap(!showMap)}>
+                     {showMap ? 'Step View' : 'Map View'}
+                   </Button>
+                </div>
+             </motion.div>
+           )}
+
+           {!showMap && order?.status !== 'out_for_delivery' && (
+             <Card className="p-5 mb-6">
+                <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center shrink-0">
+                      <MapPin className="w-5 h-5 text-gray-400" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs text-gray-500 font-medium mb-1">Delivery Address</p>
+                      <p className="text-sm font-bold text-gray-900 leading-tight">123 Health Ave, Medical District, NY 10001</p>
+                    </div>
+                </div>
+             </Card>
+           )}
         </div>
       </div>
     </ScreenWrapper>
