@@ -3,8 +3,8 @@ import { AnimatePresence } from 'motion/react';
 import { AppContext, Screen, ActiveBooking } from './store';
 
 import { Splash, Permission, Auth, ProfileCompletion } from './screens/Onboarding';
-import { Home, MemberManagement, AddressSelection, ConsultationHistory, PulseCareHistory, DocumentViewer, Profile } from './screens/Main';
-import { ConfirmLocation, SearchingDoctor, DoctorAccepted, Payment, DoctorEnRoute, OTPVerification, ConsultationOngoing, EndConsultationOTP, PrescriptionUploaded, RatingFeedback } from './screens/Booking';
+import { Home, MemberManagement, AddressSelection, ConsultationHistory, PulseCareHistory, DocumentViewer, Profile, NotificationCenter } from './screens/Main';
+import { ConfirmLocation, SearchingDoctor, DoctorAccepted, Payment, DoctorEnRoute, OTPVerification, ConsultationOngoing, EndConsultationOTP, PrescriptionUploaded, RatingFeedback, AISymptomChecker } from './screens/Booking';
 import { NurseBooking, SearchingNurse, NurseAccepted, NurseEnRoute, MedicineRequest, MedicineOrderConfirmed, MedicineTracking, AmbulanceRequest, SearchingAmbulance, AmbulanceEnRoute, PhysioBooking, SearchingPhysio, PhysioAccepted, PhysioEnRoute } from './screens/PulseCare';
 import { LabTestBooking, LabTestConfirm, SearchingPhlebotomist, PhlebotomistEnRoute, LabResults, PsychologistBooking, SearchingPsychologist, PsychologistAccepted, PsychologistSession, OnlineCounseling, CounselorMatched, CounselingSession } from './screens/MoreCare';
 import { DietitianBooking, SearchingDietitian, DietitianAccepted, DietitianSession, VaccinationBooking, SearchingVaccinator, VaccinatorEnRoute, EquipmentRental, EquipmentOrderConfirmed, SOSAlert, CarePackages } from './screens/ExtraCare';
@@ -71,6 +71,8 @@ export default function App() {
       case 'ConsultationHistory': return <ConsultationHistory key="ConsultationHistory" />;
       case 'PulseCareHistory': return <PulseCareHistory key="PulseCareHistory" />;
       case 'DocumentViewer': return <DocumentViewer key="DocumentViewer" />;
+      case 'NotificationCenter': return <NotificationCenter key="NotificationCenter" />;
+      case 'AISymptomChecker': return <AISymptomChecker key="AISymptomChecker" />;
       case 'Profile': return <Profile key="Profile" />;
       // Pulse Care — Nurse
       case 'NurseBooking': return <NurseBooking key="NurseBooking" />;

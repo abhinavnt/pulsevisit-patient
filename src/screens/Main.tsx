@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button, Card, Input, ScreenWrapper, TopBar } from '../components/UI';
 import { useAppContext } from '../store';
-import { MapPin, UserPlus, FileText, ChevronRight, Search, Clock, CheckCircle2, XCircle, User, Calendar, Home as HomeIcon, Users, HelpCircle, UserCircle, Settings, CreditCard, Bell, LogOut, ChevronLeft, Zap, AlertTriangle, Download, Share } from 'lucide-react';
+import { MapPin, UserPlus, FileText, ChevronRight, Search, Clock, CheckCircle2, XCircle, User, Calendar, Home as HomeIcon, Users, HelpCircle, UserCircle, Settings, CreditCard, Bell, LogOut, ChevronLeft, Zap, AlertTriangle, Download, Share, Sparkles, MessageSquare } from 'lucide-react';
 
 export const Home = () => {
   const { navigate, activeTab, setActiveTab, activeBookings, setSelectedService } = useAppContext();
@@ -115,7 +115,19 @@ export const Home = () => {
               </span>
               <span className="text-white text-xs font-bold tracking-wider">SOS</span>
             </button>
-            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm cursor-pointer" onClick={() => navigate('Profile')}>
+            <div className="relative">
+              <button
+                onClick={() => navigate('NotificationCenter')}
+                className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm cursor-pointer active:scale-95 transition-transform"
+              >
+                <Bell className="w-6 h-6 text-white" />
+                <span className="absolute top-2.5 right-2.5 flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 border border-white"></span>
+                </span>
+              </button>
+            </div>
+            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm cursor-pointer active:scale-95 transition-transform" onClick={() => navigate('Profile')}>
               <UserCircle className="w-6 h-6 text-white" />
             </div>
           </div>
@@ -444,6 +456,20 @@ export const Home = () => {
         </Button>
       </div>
 
+      {/* AI Triage FAB */}
+      <div className="fixed bottom-24 right-6 z-30">
+        <motion.button
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', delay: 0.5 }}
+          onClick={() => navigate('AISymptomChecker')}
+          className="flex items-center gap-2 bg-gradient-to-r from-[#4A3AFF] to-[#8C3AFF] text-white px-5 py-4 rounded-full shadow-xl shadow-purple-500/30 active:scale-95 transition-transform group"
+        >
+          <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+          <span className="font-bold text-sm">Pulse AI</span>
+        </motion.button>
+      </div>
+
       {/* Bottom Nav */}
       <div className="fixed bottom-0 w-full max-w-md bg-white border-t border-gray-100 flex justify-around items-center py-4 pb-6 px-6 z-20 shadow-[0_-4px_20px_rgba(0,0,0,0.02)]">
         <div className="flex flex-col items-center gap-1 cursor-pointer text-secondary">
@@ -735,7 +761,7 @@ export const Profile = () => {
         <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wider px-2">Preferences</h3>
         <Card className="mb-6 p-0 overflow-hidden">
           <div className="flex flex-col">
-            <ProfileMenuItem icon={Bell} label="Notifications" onClick={() => { }} />
+            <ProfileMenuItem icon={Bell} label="Notifications" onClick={() => navigate('NotificationCenter')} />
             <ProfileMenuItem icon={Settings} label="Settings" onClick={() => { }} />
             <ProfileMenuItem icon={HelpCircle} label="Help & Support" onClick={() => { }} />
           </div>
@@ -899,6 +925,88 @@ export const DocumentViewer = () => {
             )}
             {downloading ? 'Extracting...' : 'Download PDF'}
           </Button>
+        </div>
+      </div>
+    </ScreenWrapper>
+  );
+};
+
+export const NotificationCenter = () => {
+  const { goBack, navigate } = useAppContext();
+  const [reminders, setReminders] = React.useState([
+    { id: 1, title: 'Time to take Paracetamol', time: 'Now', type: 'reminder', taken: false },
+    { id: 2, title: 'Drink a glass of water', time: '10 mins ago', type: 'reminder', taken: true },
+  ]);
+
+  const markTaken = (id: number) => {
+    setReminders(prev => prev.map(r => r.id === id ? { ...r, taken: true } : r));
+  };
+
+  return (
+    <ScreenWrapper className="bg-background">
+      <TopBar title="Notifications" onBack={goBack} />
+
+      <div className="px-6 py-6 pb-24">
+        <h3 className="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wider">Action Needed</h3>
+        <div className="flex flex-col gap-4 mb-8">
+          {reminders.map(rem => (
+            <motion.div layout key={rem.id}>
+              <Card className="p-4 border-l-4 border-secondary">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 ${rem.taken ? 'bg-green-100' : 'bg-blue-50'} rounded-full flex items-center justify-center shrink-0`}>
+                      {rem.taken ? <CheckCircle2 className="w-5 h-5 text-secondary" /> : <Clock className="w-5 h-5 text-primary" />}
+                    </div>
+                    <div>
+                      <h4 className={`font-bold text-sm ${rem.taken ? 'line-through text-gray-400' : 'text-gray-900'}`}>{rem.title}</h4>
+                      <p className="text-xs text-gray-500 mt-0.5">{rem.time}</p>
+                    </div>
+                  </div>
+                  {!rem.taken && (
+                    <Button 
+                      size="sm" 
+                      onClick={() => markTaken(rem.id)} 
+                      className="w-auto px-4 py-2 text-xs"
+                    >
+                      Mark Taken
+                    </Button>
+                  )}
+                </div>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+
+        <h3 className="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wider">Updates</h3>
+        <div className="flex flex-col gap-4">
+          <Card className="p-4 bg-blue-50/50 cursor-pointer hover:bg-blue-50 transition-colors" onClick={() => navigate('DocumentViewer')}>
+            <div className="flex items-start gap-3 mb-2">
+              <div className="w-10 h-10 bg-white shadow-sm rounded-full flex items-center justify-center shrink-0 text-primary">
+                <FileText className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="font-bold text-sm text-gray-900">Lab Results Ready</h4>
+                <p className="text-xs text-gray-600 leading-relaxed mt-1">Your recent Complete Blood Count (CBC) report from Oct 24 is now available for review.</p>
+              </div>
+            </div>
+            <div className="flex justify-end border-t border-gray-100 pt-3 mt-2">
+              <span className="text-xs font-bold text-primary flex items-center gap-1">View Report <ChevronRight className="w-4 h-4" /></span>
+            </div>
+          </Card>
+
+          <Card className="p-4 pb-5 opacity-70">
+            <div className="flex justify-between items-start mb-2">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center shrink-0 text-amber-600">
+                  🦴
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm text-gray-900">Upcoming Physio Session</h4>
+                  <p className="text-xs text-gray-500 mt-0.5">Tomorrow at 4:00 PM</p>
+                </div>
+              </div>
+            </div>
+          </Card>
         </div>
       </div>
     </ScreenWrapper>

@@ -74,7 +74,9 @@ export type Screen =
   | 'CarePlanCheckout'
   | 'CarePlanConfirmed'
   | 'PulseCareHistory'
-  | 'DocumentViewer';
+  | 'DocumentViewer'
+  | 'NotificationCenter'
+  | 'AISymptomChecker';
 
 export interface ActiveBooking {
   id: string;

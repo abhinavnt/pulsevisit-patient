@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button, Card, ScreenWrapper, TopBar } from '../components/UI';
 import { useAppContext } from '../store';
-import { MapPin, Phone, Star, FileText, CheckCircle2, Navigation, Clock, ShieldCheck, Download, MessageSquare, Check } from 'lucide-react';
+import { MapPin, Phone, Star, FileText, CheckCircle2, Navigation, Clock, ShieldCheck, Download, MessageSquare, Check, Sparkles, Send, Activity, ArrowRight, ChevronLeft } from 'lucide-react';
 
 export const ConfirmLocation = () => {
   const { navigate, goBack, selectedService } = useAppContext();
@@ -584,3 +584,174 @@ export const RatingFeedback = () => {
     </ScreenWrapper>
   );
 };
+
+export const AISymptomChecker = () => {
+  const { navigate, goBack, setSelectedService } = useAppContext();
+  const [messages, setMessages] = useState<{id: number, type: 'bot'|'user'|'actions', text?: string}[]>([
+    { id: 1, type: 'bot', text: 'Hi John! I am Pulse AI. What seems to be bothering you today?' }
+  ]);
+  const [isTyping, setIsTyping] = useState(false);
+  const [inputVal, setInputVal] = useState('');
+
+  const chips = ['Sudden Fever', 'Stomach Issues', 'Persistent Cough', 'Body Ache'];
+
+  const handleSymptomSelect = (symptom: string) => {
+    setMessages(prev => [...prev, { id: Date.now(), type: 'user', text: symptom }]);
+    setIsTyping(true);
+    
+    setTimeout(() => {
+      setIsTyping(false);
+      setMessages(prev => [
+        ...prev, 
+        { id: Date.now(), type: 'bot', text: `I understand you're experiencing a ${symptom.toLowerCase()}. Based on this, I strongly recommend a consultation with a General Physician as soon as possible.` },
+        { id: Date.now()+1, type: 'actions' }
+      ]);
+    }, 2000);
+  };
+
+  const handleCustomInput = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputVal.trim()) return;
+    handleSymptomSelect(inputVal);
+    setInputVal('');
+  };
+
+  // Auto-scroll to bottom of chat
+  const chatRef = React.useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, [messages, isTyping]);
+
+  return (
+    <ScreenWrapper className="bg-background flex flex-col h-screen">
+      <div className="flex items-center justify-between p-6 bg-white sticky top-0 z-30 shadow-sm border-b border-gray-100">
+        <button onClick={goBack} className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-full active:scale-95 transition-transform">
+          <ChevronLeft className="w-6 h-6 text-gray-900" />
+        </button>
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-purple-500" />
+          <h1 className="text-lg font-bold bg-gradient-to-r from-[#4A3AFF] to-[#8C3AFF] bg-clip-text text-transparent">Pulse AI Triage</h1>
+        </div>
+        <div className="w-10 h-10" />
+      </div>
+
+      {/* Chat Area */}
+      <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-6" ref={chatRef}>
+        <AnimatePresence>
+          {messages.map(msg => (
+            <motion.div
+              key={msg.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`flex w-full ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              {msg.type === 'bot' && (
+                <div className="flex gap-3 max-w-[85%]">
+                  <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center shrink-0 border border-purple-200 mt-1">
+                    <Sparkles className="w-4 h-4 text-purple-600" />
+                  </div>
+                  <div className="bg-white p-4 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100 text-sm text-gray-800 leading-relaxed">
+                    {msg.text}
+                  </div>
+                </div>
+              )}
+
+              {msg.type === 'user' && (
+                <div className="bg-primary text-white p-4 rounded-2xl rounded-tr-sm shadow-sm text-sm max-w-[85%]">
+                  {msg.text}
+                </div>
+              )}
+
+              {msg.type === 'actions' && (
+                <div className="w-full pl-11 flex flex-col gap-3">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest pl-1">Recommended Actions</p>
+                  
+                  <button 
+                    onClick={() => { setSelectedService('doctor'); navigate('ConfirmLocation'); }}
+                    className="w-full bg-gradient-to-r from-primary to-blue-600 p-4 rounded-2xl flex items-center justify-between text-left active:scale-[0.98] transition-all shadow-md shadow-primary/20"
+                  >
+                    <div>
+                      <h4 className="text-white font-bold mb-1">Book a Doctor Visit</h4>
+                      <p className="text-white/80 text-xs">At home consultation in ~45 mins</p>
+                    </div>
+                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                      <ArrowRight className="w-4 h-4 text-white" />
+                    </div>
+                  </button>
+
+                  <button 
+                    onClick={() => { setSelectedService('lab'); navigate('ConfirmLocation'); }}
+                    className="w-full bg-white border-2 border-gray-100 p-4 rounded-2xl flex items-center justify-between text-left active:scale-[0.98] transition-all hover:border-gray-200 shadow-sm"
+                  >
+                    <div>
+                      <h4 className="text-gray-900 font-bold mb-1">Book a Lab Test</h4>
+                      <p className="text-gray-500 text-xs">Home collection for diagnosis</p>
+                    </div>
+                    <div className="w-8 h-8 bg-gray-50 rounded-full flex items-center justify-center">
+                      <ArrowRight className="w-4 h-4 text-gray-400" />
+                    </div>
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          ))}
+          
+          {isTyping && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
+              <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center shrink-0 border border-purple-200 mt-1">
+                <Sparkles className="w-4 h-4 text-purple-600" />
+              </div>
+              <div className="bg-white px-5 py-4 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100 flex items-center gap-1.5">
+                <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Input Area */}
+      {messages.length === 1 && !isTyping && (
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="px-6 mb-6">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest pl-1 mb-3">Quick Select</p>
+          <div className="flex flex-wrap gap-2">
+            {chips.map(chip => (
+              <button 
+                key={chip}
+                onClick={() => handleSymptomSelect(chip)}
+                className="bg-white border border-gray-200 px-4 py-2.5 rounded-full text-sm font-medium text-gray-700 active:bg-gray-50 active:scale-95 transition-all shadow-sm"
+              >
+                {chip}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+      )}
+
+      <div className="p-4 pt-2 bg-white border-t border-gray-100">
+        <form onSubmit={handleCustomInput} className="relative flex items-center">
+          <Activity className="absolute left-4 w-5 h-5 text-gray-400" />
+          <input 
+            type="text" 
+            value={inputVal}
+            onChange={(e) => setInputVal(e.target.value)}
+            disabled={messages.length > 1 || isTyping}
+            placeholder="Type your symptoms..."
+            className="w-full bg-gray-50 border border-gray-200 rounded-full py-4 pl-12 pr-14 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all disabled:opacity-50"
+          />
+          <button 
+            type="submit"
+            disabled={!inputVal.trim() || messages.length > 1 || isTyping}
+            className="absolute right-2 w-10 h-10 bg-gradient-to-r from-[#4A3AFF] to-[#8C3AFF] rounded-full flex items-center justify-center disabled:opacity-50 disabled:grayscale transition-all active:scale-95"
+          >
+            <Send className="w-4 h-4 text-white ml-0.5" />
+          </button>
+        </form>
+      </div>
+    </ScreenWrapper>
+  );
+};
+
