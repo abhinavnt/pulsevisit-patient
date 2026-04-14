@@ -72,7 +72,9 @@ export type Screen =
   | 'CarePlanRecommended'
   | 'CarePlanReview'
   | 'CarePlanCheckout'
-  | 'CarePlanConfirmed';
+  | 'CarePlanConfirmed'
+  | 'PulseCareHistory'
+  | 'DocumentViewer';
 
 export interface ActiveBooking {
   id: string;

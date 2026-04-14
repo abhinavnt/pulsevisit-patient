@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button, Card, Input, ScreenWrapper, TopBar } from '../components/UI';
 import { useAppContext } from '../store';
-import { MapPin, UserPlus, FileText, ChevronRight, Search, Clock, CheckCircle2, XCircle, User, Calendar, Home as HomeIcon, Users, HelpCircle, UserCircle, Settings, CreditCard, Bell, LogOut, ChevronLeft, Zap, AlertTriangle } from 'lucide-react';
+import { MapPin, UserPlus, FileText, ChevronRight, Search, Clock, CheckCircle2, XCircle, User, Calendar, Home as HomeIcon, Users, HelpCircle, UserCircle, Settings, CreditCard, Bell, LogOut, ChevronLeft, Zap, AlertTriangle, Download, Share } from 'lucide-react';
 
 export const Home = () => {
   const { navigate, activeTab, setActiveTab, activeBookings, setSelectedService } = useAppContext();
@@ -148,7 +148,7 @@ export const Home = () => {
             exit={{ opacity: 0, height: 0, marginTop: 0 }}
             className="mx-6 mb-2 overflow-hidden"
           >
-            <div 
+            <div
               className="rounded-2xl p-4 border flex items-center gap-3 cursor-pointer bg-blue-50 border-blue-200 shadow-sm"
               onClick={() => {
                 const b = activeBookings[0];
@@ -166,17 +166,16 @@ export const Home = () => {
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-bold text-gray-900">{activeBookings[0].providerName}</p>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    ['enroute', 'out_for_delivery'].includes(activeBookings[0].status) ? 'text-blue-600 bg-blue-100' : 
-                    ['ongoing', 'arrived'].includes(activeBookings[0].status) ? 'text-green-600 bg-green-100' :
-                    ['ordered', 'packed'].includes(activeBookings[0].status) ? 'text-secondary bg-green-50' : 
-                    'text-amber-600 bg-amber-100'
-                  }`}>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${['enroute', 'out_for_delivery'].includes(activeBookings[0].status) ? 'text-blue-600 bg-blue-100' :
+                      ['ongoing', 'arrived'].includes(activeBookings[0].status) ? 'text-green-600 bg-green-100' :
+                        ['ordered', 'packed'].includes(activeBookings[0].status) ? 'text-secondary bg-green-50' :
+                          'text-amber-600 bg-amber-100'
+                    }`}>
                     {activeBookings[0].status.replace(/_/g, ' ').charAt(0).toUpperCase() + activeBookings[0].status.replace(/_/g, ' ').slice(1)}
                   </span>
                 </div>
                 <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
-                   <Clock className="w-3 h-3" /> {activeBookings[0].eta ? `ETA: ${activeBookings[0].eta}` : 'Status updated'}
+                  <Clock className="w-3 h-3" /> {activeBookings[0].eta ? `ETA: ${activeBookings[0].eta}` : 'Status updated'}
                 </p>
               </div>
               <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
@@ -262,19 +261,35 @@ export const Home = () => {
               <button onClick={() => navigate('ConsultationHistory')} className="text-sm font-medium text-secondary hover:underline">View All</button>
             </div>
 
-            <Card className="mb-6" onClick={() => navigate('ConsultationHistory')}>
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                    <CheckCircle2 className="w-4 h-4 text-secondary" />
+            <Card className="mb-6 p-5 cursor-pointer hover:border-primary/20 transition-colors" onClick={() => navigate('ConsultationHistory')}>
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
+                    <User className="w-6 h-6 text-primary" />
                   </div>
-                  <span className="text-sm font-semibold text-gray-900">Dr. Sarah Jenkins</span>
+                  <div>
+                    <h3 className="font-bold text-gray-900">Dr. Sarah Jenkins</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">General Checkup</p>
+                  </div>
                 </div>
-                <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">Completed</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-green-100 text-secondary">
+                  COMPLETED
+                </span>
               </div>
-              <p className="text-xs text-gray-500 flex items-center gap-1">
-                <Calendar className="w-3 h-3" /> Oct 24, 2023 • General Checkup
-              </p>
+
+              <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
+                <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
+                  <Calendar className="w-4 h-4" />
+                  Oct 24, 2023
+                </div>
+                <div 
+                  onClick={(e) => { e.stopPropagation(); navigate('DocumentViewer'); }}
+                  className="flex items-center gap-1.5 text-xs text-primary font-medium ml-auto cursor-pointer hover:underline"
+                >
+                  <FileText className="w-4 h-4" />
+                  View Prescription
+                </div>
+              </div>
             </Card>
           </motion.div>
         )}
@@ -349,33 +364,62 @@ export const Home = () => {
 
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-base font-bold text-gray-900">Recent Pulse Care</h2>
-              <button className="text-sm font-medium text-secondary hover:underline">View All</button>
+              <button onClick={() => navigate('PulseCareHistory')} className="text-sm font-medium text-secondary hover:underline">View All</button>
             </div>
 
-            <Card className="mb-3">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm">🩺</div>
-                  <span className="text-sm font-semibold text-gray-900">Nurse Visit</span>
+            <Card className="mb-3 p-5 cursor-pointer hover:border-secondary/20 transition-colors" onClick={() => navigate('PulseCareHistory')}>
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-xl">
+                    🩺
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900">Nurse Visit</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">One-time Session</p>
+                  </div>
                 </div>
-                <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">Completed</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-green-100 text-secondary">
+                  COMPLETED
+                </span>
               </div>
-              <p className="text-xs text-gray-500 flex items-center gap-1">
-                <Calendar className="w-3 h-3" /> Oct 20, 2023 • One-time Session
-              </p>
+
+              <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
+                <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
+                  <Calendar className="w-4 h-4" />
+                  Oct 20, 2023
+                </div>
+                <div 
+                  onClick={(e) => { e.stopPropagation(); navigate('DocumentViewer'); }}
+                  className="flex items-center gap-1.5 text-xs text-secondary font-medium ml-auto cursor-pointer hover:underline"
+                >
+                  <FileText className="w-4 h-4" />
+                  View Report
+                </div>
+              </div>
             </Card>
 
-            <Card>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-sm">🦴</div>
-                  <span className="text-sm font-semibold text-gray-900">Physiotherapy</span>
+            <Card className="p-5 cursor-pointer hover:border-amber-200 transition-colors" onClick={() => navigate('PulseCareHistory')}>
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center text-xl">
+                    🦴
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900">Physiotherapy</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">Session 2 of 5</p>
+                  </div>
                 </div>
-                <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-md">Upcoming</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-amber-50 text-amber-600">
+                  UPCOMING
+                </span>
               </div>
-              <p className="text-xs text-gray-500 flex items-center gap-1">
-                <Calendar className="w-3 h-3" /> Oct 28, 2023 • Session 2 of 5
-              </p>
+
+              <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
+                <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
+                  <Calendar className="w-4 h-4" />
+                  Oct 28, 2023
+                </div>
+              </div>
             </Card>
 
             {/* Care Packages Banner */}
@@ -518,7 +562,7 @@ export const AddressSelection = () => {
 };
 
 export const ConsultationHistory = () => {
-  const { goBack } = useAppContext();
+  const { goBack, navigate } = useAppContext();
 
   const history = [
     { id: 1, doctor: 'Dr. Sarah Jenkins', date: 'Oct 24, 2023', type: 'General Checkup', status: 'Completed', color: 'bg-green-100 text-secondary' },
@@ -530,38 +574,123 @@ export const ConsultationHistory = () => {
     <ScreenWrapper className="bg-background">
       <TopBar title="Consultation History" onBack={goBack} />
 
-      <div className="px-6 py-6 flex flex-col gap-4">
-        {history.map((item) => (
-          <Card key={item.id} className="p-5">
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
-                  <User className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-gray-900">{item.doctor}</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">{item.type}</p>
-                </div>
-              </div>
-              <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md ${item.color}`}>
-                {item.status}
-              </span>
-            </div>
+      <div className="px-6 py-6">
+        {/* Toggle between Consultation and Pulse Care */}
+        <div className="bg-gray-100 rounded-2xl p-1 flex mb-6 shadow-inner">
+          <button className="flex-1 py-2 text-sm font-bold rounded-xl bg-white text-primary shadow-sm">
+            Consultations
+          </button>
+          <button
+            onClick={() => navigate('PulseCareHistory')}
+            className="flex-1 py-2 text-sm font-semibold rounded-xl text-gray-500"
+          >
+            Pulse Care
+          </button>
+        </div>
 
-            <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
-              <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
-                <Calendar className="w-4 h-4" />
-                {item.date}
-              </div>
-              {item.status === 'Completed' && (
-                <div className="flex items-center gap-1.5 text-xs text-primary font-medium ml-auto cursor-pointer hover:underline">
-                  <FileText className="w-4 h-4" />
-                  View Prescription
+        <div className="flex flex-col gap-4">
+          {history.map((item) => (
+            <Card key={item.id} className="p-5">
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
+                    <User className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900">{item.doctor}</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">{item.type}</p>
+                  </div>
                 </div>
-              )}
-            </div>
-          </Card>
-        ))}
+                <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md ${item.color}`}>
+                  {item.status}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
+                <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
+                  <Calendar className="w-4 h-4" />
+                  {item.date}
+                </div>
+                {item.status === 'Completed' && (
+                  <div
+                    onClick={() => navigate('DocumentViewer')}
+                    className="flex items-center gap-1.5 text-xs text-primary font-medium ml-auto cursor-pointer hover:underline"
+                  >
+                    <FileText className="w-4 h-4" />
+                    View Prescription
+                  </div>
+                )}
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </ScreenWrapper>
+  );
+};
+
+export const PulseCareHistory = () => {
+  const { goBack, navigate } = useAppContext();
+
+  const history = [
+    { id: 1, service: 'Nurse Visit', date: 'Oct 20, 2023', type: 'One-time Session', status: 'Completed', icon: '🩺', color: 'bg-blue-100 text-blue-600' },
+    { id: 2, service: 'Ambulance', date: 'Oct 15, 2023', type: 'Emergency Dispatch', status: 'Completed', icon: '🚑', color: 'bg-red-100 text-red-600' },
+    { id: 3, service: 'Physiotherapy', date: 'Oct 12, 2023', type: 'Session 1 of 5', status: 'Completed', icon: '🦴', color: 'bg-amber-100 text-amber-600' },
+    { id: 4, service: 'Pharmacy Order', date: 'Oct 08, 2023', type: 'Prescription Drugs', status: 'Completed', icon: '💊', color: 'bg-purple-100 text-purple-600' },
+  ];
+
+  return (
+    <ScreenWrapper className="bg-background">
+      <TopBar title="Pulse Care History" onBack={goBack} />
+
+      <div className="px-6 py-6">
+        {/* Toggle between Consultation and Pulse Care */}
+        <div className="bg-gray-100 rounded-2xl p-1 flex mb-6 shadow-inner">
+          <button
+            onClick={() => navigate('ConsultationHistory')}
+            className="flex-1 py-2 text-sm font-semibold rounded-xl text-gray-500"
+          >
+            Consultations
+          </button>
+          <button className="flex-1 py-2 text-sm font-bold rounded-xl bg-white text-secondary shadow-sm">
+            Pulse Care
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          {history.map((item) => (
+            <Card key={item.id} className="p-5">
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex items-center gap-3">
+                  <div className={`w-12 h-12 ${item.color.split(' ')[0]} rounded-full flex items-center justify-center text-xl`}>
+                    {item.icon}
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900">{item.service}</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">{item.type}</p>
+                  </div>
+                </div>
+                <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-green-100 text-secondary`}>
+                  {item.status}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
+                <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
+                  <Calendar className="w-4 h-4" />
+                  {item.date}
+                </div>
+                <div
+                  onClick={() => navigate('DocumentViewer')}
+                  className="flex items-center gap-1.5 text-xs text-secondary font-medium ml-auto cursor-pointer hover:underline"
+                >
+                  <FileText className="w-4 h-4" />
+                  View Report
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
       </div>
     </ScreenWrapper>
   );
@@ -635,3 +764,143 @@ const ProfileMenuItem = ({ icon: Icon, label, onClick }: { icon: any, label: str
     <ChevronRight className="w-5 h-5 text-gray-400" />
   </div>
 );
+
+export const DocumentViewer = () => {
+  const { goBack } = useAppContext();
+  const [downloading, setDownloading] = React.useState(false);
+
+  const handleDownload = () => {
+    setDownloading(true);
+    setTimeout(() => {
+      setDownloading(false);
+      alert('Document downloaded successfully!');
+    }, 2000);
+  };
+
+  return (
+    <ScreenWrapper className="bg-gray-100">
+      <div className="flex items-center justify-between p-6 bg-white sticky top-0 z-30 shadow-sm">
+        <button onClick={goBack} className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-full active:scale-95 transition-transform">
+          <ChevronLeft className="w-6 h-6 text-gray-900" />
+        </button>
+        <h1 className="text-lg font-bold text-gray-900">Digital Copy</h1>
+        <div className="flex gap-2">
+          <button className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-full active:scale-95 transition-transform">
+            <Share className="w-5 h-5 text-gray-600" />
+          </button>
+        </div>
+      </div>
+
+      <div className="px-6 py-8 flex flex-col items-center flex-1">
+        {/* Prescription / Report Paper */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="w-full bg-white rounded-lg shadow-xl p-8 relative overflow-hidden flex flex-col min-h-[500px]"
+        >
+          {/* Hospital Header */}
+          <div className="flex justify-between items-start mb-8 pb-6 border-b border-gray-100">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <div className="w-6 h-6 bg-primary rounded-md flex items-center justify-center text-[10px] text-white font-bold">P</div>
+                <h2 className="text-sm font-bold text-primary tracking-tight">PULSE CARE</h2>
+              </div>
+              <p className="text-[10px] text-gray-400 font-medium">Verified Digital Document</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] font-bold text-gray-900 uppercase tracking-widest">Digital Prescription</p>
+              <p className="text-[10px] text-gray-400 font-medium mt-1">ID: #DOC-94827-BC</p>
+            </div>
+          </div>
+
+          {/* Patient Details */}
+          <div className="grid grid-cols-2 gap-6 mb-8 bg-gray-50/50 p-4 rounded-xl">
+            <div>
+              <p className="text-[8px] text-gray-400 font-bold uppercase tracking-widest mb-1">Patient</p>
+              <p className="text-xs font-bold text-gray-900">John Doe, 24M</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[8px] text-gray-400 font-bold uppercase tracking-widest mb-1">Date</p>
+              <p className="text-xs font-bold text-gray-900">Oct 24, 2023</p>
+            </div>
+          </div>
+
+          {/* Content Simulation */}
+          <div className="flex-1">
+            <div className="mb-6">
+              <h4 className="text-[10px] font-bold text-primary uppercase tracking-widest mb-3 border-l-2 border-primary pl-2">Diagnosis</h4>
+              <p className="text-xs text-gray-600 leading-relaxed font-medium">Mild viral infection with associated body ache and low-grade fever. Recommended rest and hydration.</p>
+            </div>
+
+            <div>
+              <h4 className="text-[10px] font-bold text-primary uppercase tracking-widest mb-3 border-l-2 border-primary pl-2">Medications</h4>
+              <div className="space-y-4">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-xs font-bold text-gray-900">Paracetamol 650mg</p>
+                    <p className="text-[10px] text-gray-500 mt-1">1-0-1 | After Food | 5 Days</p>
+                  </div>
+                  <span className="text-[10px] font-bold text-gray-400">Qty: 10</span>
+                </div>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-xs font-bold text-gray-900">Vitamin C Supplement</p>
+                    <p className="text-[10px] text-gray-500 mt-1">0-1-0 | Before Food | 10 Days</p>
+                  </div>
+                  <span className="text-[10px] font-bold text-gray-400">Qty: 10</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Verification Watermark */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-12 opacity-[0.03] pointer-events-none">
+            <h1 className="text-8xl font-black whitespace-nowrap">PULSE CARE</h1>
+          </div>
+
+          {/* Footer Signature */}
+          <div className="mt-12 pt-6 border-t border-gray-100 flex justify-between items-end">
+            <div>
+              <p className="text-[8px] text-gray-400 font-bold uppercase tracking-widest mb-4">Doctor's Digital Signature</p>
+              <div className="w-32 h-12 bg-gray-50 rounded italic flex items-center justify-center text-gray-400 text-sm">
+                Sarah Jenkins
+              </div>
+            </div>
+            <div className="flex flex-col items-end">
+              <div className="w-16 h-16 bg-gray-100 rounded-lg mb-2 flex items-center justify-center">
+                {/* QR Code Placeholder */}
+                <div className="w-12 h-12 border-2 border-gray-200 bg-gray-50"></div>
+              </div>
+              <p className="text-[8px] text-gray-400 font-medium">Scan to verify</p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Action Buttons */}
+        <div className="w-full mt-8 grid grid-cols-2 gap-4">
+          <Button
+            variant="outline"
+            className="gap-2 bg-white"
+            onClick={() => { }}
+          >
+            <Share className="w-4 h-4" />
+            Share
+          </Button>
+          <Button
+            variant="secondary"
+            className="gap-2"
+            onClick={handleDownload}
+            disabled={downloading}
+          >
+            {downloading ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <Download className="w-4 h-4" />
+            )}
+            {downloading ? 'Extracting...' : 'Download PDF'}
+          </Button>
+        </div>
+      </div>
+    </ScreenWrapper>
+  );
+};
