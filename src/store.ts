@@ -25,6 +25,9 @@ export type Screen =
   | 'SearchingNurse'
   | 'NurseAccepted'
   | 'NurseEnRoute'
+  | 'NurseOTPVerification'
+  | 'NurseVisitOngoing'
+  | 'NurseEndOTP'
   // Pulse Care — Medicine
   | 'MedicineRequest'
   | 'MedicineOrderConfirmed'
@@ -89,6 +92,16 @@ export interface ActiveBooking {
 
 export type BookingService = 'doctor' | 'nurse' | 'physio' | 'lab' | 'vaccination' | 'psychologist' | 'dietitian';
 
+export interface FamilyMember {
+  id: string;
+  name: string;
+  relation: string;
+  age: number;
+  gender: 'Male' | 'Female' | 'Other';
+  avatar?: string;
+  activeCarePlans?: number;
+}
+
 interface AppContextType {
   currentScreen: Screen;
   navigate: (screen: Screen) => void;
@@ -101,6 +114,11 @@ interface AppContextType {
   updateBookingStatus: (id: string, status: ActiveBooking['status'], eta?: string) => void;
   selectedService: BookingService;
   setSelectedService: (service: BookingService) => void;
+  // Family State
+  familyMembers: FamilyMember[];
+  selectedMemberId: string;
+  selectMember: (id: string) => void;
+  addFamilyMember: (member: FamilyMember) => void;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -115,6 +133,10 @@ export const AppContext = createContext<AppContextType>({
   updateBookingStatus: () => {},
   selectedService: 'doctor',
   setSelectedService: () => {},
+  familyMembers: [],
+  selectedMemberId: 'me',
+  selectMember: () => {},
+  addFamilyMember: () => {},
 });
 
 export const useAppContext = () => useContext(AppContext);

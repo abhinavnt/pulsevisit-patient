@@ -5,7 +5,7 @@ import { AppContext, Screen, ActiveBooking } from './store';
 import { Splash, Permission, Auth, ProfileCompletion } from './screens/Onboarding';
 import { Home, MemberManagement, AddressSelection, ConsultationHistory, PulseCareHistory, DocumentViewer, Profile, NotificationCenter } from './screens/Main';
 import { ConfirmLocation, SearchingDoctor, DoctorAccepted, Payment, DoctorEnRoute, OTPVerification, ConsultationOngoing, EndConsultationOTP, PrescriptionUploaded, RatingFeedback, AISymptomChecker } from './screens/Booking';
-import { NurseBooking, SearchingNurse, NurseAccepted, NurseEnRoute, MedicineRequest, MedicineOrderConfirmed, MedicineTracking, AmbulanceRequest, SearchingAmbulance, AmbulanceEnRoute, PhysioBooking, SearchingPhysio, PhysioAccepted, PhysioEnRoute } from './screens/PulseCare';
+import { NurseBooking, SearchingNurse, NurseAccepted, NurseEnRoute, NurseOTPVerification, NurseVisitOngoing, NurseEndOTP, MedicineRequest, MedicineOrderConfirmed, MedicineTracking, AmbulanceRequest, SearchingAmbulance, AmbulanceEnRoute, PhysioBooking, SearchingPhysio, PhysioAccepted, PhysioEnRoute } from './screens/PulseCare';
 import { LabTestBooking, LabTestConfirm, SearchingPhlebotomist, PhlebotomistEnRoute, LabResults, PsychologistBooking, SearchingPsychologist, PsychologistAccepted, PsychologistSession, OnlineCounseling, CounselorMatched, CounselingSession } from './screens/MoreCare';
 import { DietitianBooking, SearchingDietitian, DietitianAccepted, DietitianSession, VaccinationBooking, SearchingVaccinator, VaccinatorEnRoute, EquipmentRental, EquipmentOrderConfirmed, SOSAlert, CarePackages } from './screens/ExtraCare';
 import { CarePlanRecommended, CarePlanReview, CarePlanCheckout, CarePlanConfirmed } from './screens/CarePlan';
@@ -16,6 +16,13 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'doctor' | 'pulsecare'>('doctor');
   const [activeBookings, setActiveBookings] = useState<ActiveBooking[]>([]);
   const [selectedService, setSelectedService] = useState<any>('doctor');
+  const [selectedMemberId, setSelectedMemberId] = useState<string>('me');
+  const [familyMembers, setFamilyMembers] = useState<any[]>([
+    { id: 'me', name: 'John Doe', relation: 'Me', age: 32, gender: 'Male', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John' },
+    { id: 'm1', name: 'Sarah Doe', relation: 'Spouse', age: 30, gender: 'Female', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah', activeCarePlans: 1 },
+    { id: 'm2', name: 'Robert Doe', relation: 'Father', age: 65, gender: 'Male', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Robert', activeCarePlans: 2 },
+    { id: 'm3', name: 'Leela Doe', relation: 'Mother', age: 60, gender: 'Female', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Leela' },
+  ]);
 
   const navigate = (screen: Screen) => {
     setHistory((prev) => [...prev, currentScreen]);
@@ -48,6 +55,8 @@ export default function App() {
     ));
   };
 
+  const selectMember = (id: string) => setSelectedMemberId(id);
+  const addFamilyMember = (member: any) => setFamilyMembers(prev => [...prev, member]);
 
   const renderScreen = () => {
     switch (currentScreen) {
@@ -79,6 +88,9 @@ export default function App() {
       case 'SearchingNurse': return <SearchingNurse key="SearchingNurse" />;
       case 'NurseAccepted': return <NurseAccepted key="NurseAccepted" />;
       case 'NurseEnRoute': return <NurseEnRoute key="NurseEnRoute" />;
+      case 'NurseOTPVerification': return <NurseOTPVerification key="NurseOTPVerification" />;
+      case 'NurseVisitOngoing': return <NurseVisitOngoing key="NurseVisitOngoing" />;
+      case 'NurseEndOTP': return <NurseEndOTP key="NurseEndOTP" />;
       // Pulse Care — Medicine
       case 'MedicineRequest': return <MedicineRequest key="MedicineRequest" />;
       case 'MedicineOrderConfirmed': return <MedicineOrderConfirmed key="MedicineOrderConfirmed" />;
@@ -135,7 +147,8 @@ export default function App() {
     <AppContext.Provider value={{ 
       currentScreen, navigate, goBack, activeTab, setActiveTab, 
       activeBookings, addBooking, removeBooking, updateBookingStatus,
-      selectedService, setSelectedService
+      selectedService, setSelectedService,
+      familyMembers, selectedMemberId, selectMember, addFamilyMember
     }}>
       <div className="min-h-screen bg-gray-200 flex justify-center sm:items-center sm:p-4">
 

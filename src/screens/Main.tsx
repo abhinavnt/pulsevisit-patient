@@ -2,10 +2,10 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button, Card, Input, ScreenWrapper, TopBar } from '../components/UI';
 import { useAppContext } from '../store';
-import { MapPin, UserPlus, FileText, ChevronRight, Search, Clock, CheckCircle2, XCircle, User, Calendar, Home as HomeIcon, Users, HelpCircle, UserCircle, Settings, CreditCard, Bell, LogOut, ChevronLeft, Zap, AlertTriangle, Download, Share, Sparkles, MessageSquare } from 'lucide-react';
+import { MapPin, UserPlus, FileText, ChevronRight, Search, Clock, CheckCircle2, XCircle, User, Calendar, Home as HomeIcon, Users, HelpCircle, UserCircle, Settings, CreditCard, Bell, LogOut, ChevronLeft, Zap, AlertTriangle, Download, Share, Sparkles, MessageSquare, Plus } from 'lucide-react';
 
 export const Home = () => {
-  const { navigate, activeTab, setActiveTab, activeBookings, setSelectedService } = useAppContext();
+  const { navigate, activeTab, setActiveTab, activeBookings, setSelectedService, familyMembers, selectedMemberId, selectMember } = useAppContext();
   const [showMoreServices, setShowMoreServices] = React.useState(false);
   // activeTab and setActiveTab now come from global context (App.tsx)
   // so the selected tab is preserved when navigating back from a service screen
@@ -97,14 +97,15 @@ export const Home = () => {
   return (
     <ScreenWrapper className="bg-background pb-24">
       {/* Header */}
-      <div className="bg-primary text-white p-6 rounded-b-[2rem] shadow-md">
-        <div className="flex justify-between items-center mb-6">
+      <div className="bg-primary text-white p-6 rounded-b-[2rem] shadow-md relative ">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl" />
+
+        <div className="flex justify-between items-center mb-6 relative z-10">
           <div>
-            <p className="text-blue-200 text-sm font-medium">Hello,</p>
-            <h1 className="text-2xl font-bold tracking-tight">John Doe</h1>
+            <p className="text-blue-200 text-sm font-medium">Managing care for</p>
+            <h1 className="text-2xl font-bold tracking-tight">Family Circle</h1>
           </div>
           <div className="flex items-center gap-2">
-            {/* SOS Button */}
             <button
               onClick={() => navigate('SOSAlert')}
               className="flex items-center gap-1.5 bg-red-500 hover:bg-red-600 active:scale-95 transition-all px-3 py-2 rounded-full shadow-lg shadow-red-900/30"
@@ -115,26 +116,47 @@ export const Home = () => {
               </span>
               <span className="text-white text-xs font-bold tracking-wider">SOS</span>
             </button>
-            <div className="relative">
-              <button
-                onClick={() => navigate('NotificationCenter')}
-                className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm cursor-pointer active:scale-95 transition-transform"
-              >
-                <Bell className="w-6 h-6 text-white" />
-                <span className="absolute top-2.5 right-2.5 flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 border border-white"></span>
-                </span>
-              </button>
-            </div>
-            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm cursor-pointer active:scale-95 transition-transform" onClick={() => navigate('Profile')}>
-              <UserCircle className="w-6 h-6 text-white" />
-            </div>
+            <button
+              onClick={() => navigate('NotificationCenter')}
+              className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm cursor-pointer active:scale-95 transition-transform"
+            >
+              <Bell className="w-5 h-5 text-white" />
+            </button>
           </div>
         </div>
 
+        {/* Family Switcher Carousel */}
+        <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 relative z-10 -mx-6 px-6">
+          {familyMembers.map((member) => (
+            <button
+              key={member.id}
+              onClick={() => selectMember(member.id)}
+              className={`flex flex-col items-center gap-2 shrink-0 transition-all duration-300 ${selectedMemberId === member.id ? 'scale-110' : 'opacity-60 scale-90'}`}
+            >
+              <div className={`w-14 h-14 rounded-full p-1 border-2 transition-colors ${selectedMemberId === member.id ? 'border-white bg-white/20' : 'border-transparent bg-white/5'}`}>
+                <img src={member.avatar} className="w-full h-full rounded-full bg-white/10" alt={member.name} />
+              </div>
+              <span className="text-[10px] font-bold text-white uppercase tracking-wider">{member.relation}</span>
+              {member.activeCarePlans > 0 && (
+                <div className="absolute -top-1 -right-1 w-5 h-5 bg-secondary text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-primary shadow-sm">
+                  {member.activeCarePlans}
+                </div>
+              )}
+            </button>
+          ))}
+          <button
+            onClick={() => navigate('MemberManagement')}
+            className="flex flex-col items-center gap-2 shrink-0 opacity-60 scale-90"
+          >
+            <div className="w-14 h-14 rounded-full bg-white/10 border-2 border-dashed border-white/30 flex items-center justify-center">
+              <Plus className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-[10px] font-bold text-white uppercase tracking-wider">Add</span>
+          </button>
+        </div>
+
         <div
-          className="bg-white/10 backdrop-blur-md rounded-2xl p-4 flex items-center justify-between cursor-pointer border border-white/20 active:scale-[0.98] transition-transform"
+          className="bg-white/10 backdrop-blur-md rounded-2xl p-4 mt-6 flex items-center justify-between cursor-pointer border border-white/20 active:scale-[0.98] transition-transform relative z-10"
           onClick={() => navigate('AddressSelection')}
         >
           <div className="flex items-center gap-3">
@@ -142,7 +164,7 @@ export const Home = () => {
               <MapPin className="w-5 h-5 text-white" />
             </div>
             <div className="truncate pr-4">
-              <p className="text-xs text-blue-200 font-medium">Current Location</p>
+              <p className="text-xs text-blue-200 font-medium">Visit Address for {familyMembers.find(m => m.id === selectedMemberId)?.name}</p>
               <p className="text-sm font-semibold truncate">123 Health Ave, Medical District</p>
             </div>
           </div>
@@ -179,9 +201,9 @@ export const Home = () => {
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-bold text-gray-900">{activeBookings[0].providerName}</p>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${['enroute', 'out_for_delivery'].includes(activeBookings[0].status) ? 'text-blue-600 bg-blue-100' :
-                      ['ongoing', 'arrived'].includes(activeBookings[0].status) ? 'text-green-600 bg-green-100' :
-                        ['ordered', 'packed'].includes(activeBookings[0].status) ? 'text-secondary bg-green-50' :
-                          'text-amber-600 bg-amber-100'
+                    ['ongoing', 'arrived'].includes(activeBookings[0].status) ? 'text-green-600 bg-green-100' :
+                      ['ordered', 'packed'].includes(activeBookings[0].status) ? 'text-secondary bg-green-50' :
+                        'text-amber-600 bg-amber-100'
                     }`}>
                     {activeBookings[0].status.replace(/_/g, ' ').charAt(0).toUpperCase() + activeBookings[0].status.replace(/_/g, ' ').slice(1)}
                   </span>
@@ -294,7 +316,7 @@ export const Home = () => {
                   <Calendar className="w-4 h-4" />
                   Oct 24, 2023
                 </div>
-                <div 
+                <div
                   onClick={(e) => { e.stopPropagation(); navigate('DocumentViewer'); }}
                   className="flex items-center gap-1.5 text-xs text-primary font-medium ml-auto cursor-pointer hover:underline"
                 >
@@ -400,7 +422,7 @@ export const Home = () => {
                   <Calendar className="w-4 h-4" />
                   Oct 20, 2023
                 </div>
-                <div 
+                <div
                   onClick={(e) => { e.stopPropagation(); navigate('DocumentViewer'); }}
                   className="flex items-center gap-1.5 text-xs text-secondary font-medium ml-auto cursor-pointer hover:underline"
                 >
@@ -495,35 +517,130 @@ export const Home = () => {
 
 
 export const MemberManagement = () => {
-  const { navigate, goBack } = useAppContext();
+  const { navigate, goBack, familyMembers, selectMember, addFamilyMember } = useAppContext();
+  const [showAddForm, setShowAddForm] = React.useState(false);
+
+  const [formData, setFormData] = React.useState({
+    name: '',
+    age: '',
+    gender: 'Female',
+    relation: ''
+  });
+
+  const handleAdd = () => {
+    if (!formData.name || !formData.relation) return;
+    const newMember = {
+      id: `m${Date.now()}`,
+      ...formData,
+      age: Number(formData.age),
+      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${formData.name}`
+    };
+    addFamilyMember(newMember as any);
+    setShowAddForm(false);
+    setFormData({ name: '', age: '', gender: 'Female', relation: '' });
+  };
 
   return (
-    <ScreenWrapper className="bg-white">
-      <TopBar title="Add Member" onBack={goBack} />
-      <div className="px-6 py-6 flex flex-col flex-1">
-        <p className="text-gray-500 mb-8">Add details for the family member or friend you are booking for.</p>
+    <ScreenWrapper className="bg-[#F8FAFC]">
+      <TopBar title="Family Members" onBack={goBack} />
+      <div className="px-6 py-6 flex flex-col h-full overflow-y-auto pb-32">
+        <div className="flex items-center justify-between mb-6">
+          <p className="text-sm font-medium text-slate-500">Manage care profiles for your family</p>
+          <button
+            onClick={() => setShowAddForm(true)}
+            className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center shadow-lg shadow-secondary/20 active:scale-90 transition-all"
+          >
+            <Plus className="w-6 h-6 text-white" />
+          </button>
+        </div>
 
-        <div className="flex flex-col gap-6">
-          <Input label="Full Name" placeholder="Jane Doe" icon={User} />
-          <Input label="Age" placeholder="e.g. 28" type="number" icon={Calendar} />
-
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-600 ml-1">Gender</label>
-            <div className="grid grid-cols-3 gap-3">
-              {['Male', 'Female', 'Other'].map((g) => (
-                <div key={g} className={`py-3 text-center rounded-xl border ${g === 'Female' ? 'border-secondary bg-green-50 text-secondary font-medium' : 'border-gray-200 text-gray-500'}`}>
-                  {g}
+        <div className="space-y-4">
+          {familyMembers.map((member) => (
+            <Card key={member.id} className="p-4 flex items-center gap-4 hover:border-secondary/30 transition-colors cursor-pointer group" onClick={() => { selectMember(member.id); navigate('Home'); }}>
+              <div className="w-16 h-16 rounded-2xl bg-slate-50 p-1 border border-slate-100 shrink-0">
+                <img src={member.avatar} className="w-full h-full rounded-xl object-cover" alt={member.name} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-slate-900 truncate">{member.name}</h3>
+                  <span className="text-[10px] font-bold text-secondary bg-green-50 px-2 py-0.5 rounded-full uppercase tracking-wider">{member.relation}</span>
                 </div>
-              ))}
+                <div className="flex items-center gap-3 mt-1">
+                  <p className="text-xs text-slate-500">{member.age} years • {member.gender}</p>
+                </div>
+                {member.activeCarePlans > 0 && (
+                  <div className="flex items-center gap-1 mt-2 text-[#0F3D73]">
+                    <Sparkles className="w-3 h-3" />
+                    <p className="text-[10px] font-bold uppercase tracking-wider">{member.activeCarePlans} Active Care Plans</p>
+                  </div>
+                )}
+              </div>
+              <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-secondary transition-colors" />
+            </Card>
+          ))}
+        </div>
+
+        <AnimatePresence>
+          {showAddForm && (
+            <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm p-4">
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                className="bg-white w-full max-w-sm rounded-[2.5rem] p-8 pb-10 shadow-2xl relative"
+              >
+                <button onClick={() => setShowAddForm(false)} className="absolute top-6 right-6 w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center">
+                  <XCircle className="w-5 h-5 text-slate-500" />
+                </button>
+                <h2 className="text-xl font-bold text-slate-900 mb-6">New Member</h2>
+
+                <div className="space-y-5">
+                  <Input
+                    label="Full Name"
+                    placeholder="Jane Doe"
+                    icon={User}
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input
+                      label="Age"
+                      placeholder="e.g. 28"
+                      type="number"
+                      icon={Calendar}
+                      value={formData.age}
+                      onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                    />
+                    <Input
+                      label="Relation"
+                      placeholder="e.g. Mother"
+                      icon={Users}
+                      value={formData.relation}
+                      onChange={(e) => setFormData({ ...formData, relation: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Gender</label>
+                    <div className="grid grid-cols-3 gap-3">
+                      {['Male', 'Female', 'Other'].map((g) => (
+                        <button
+                          key={g}
+                          onClick={() => setFormData({ ...formData, gender: g as any })}
+                          className={`py-3 text-sm rounded-xl border-2 transition-all font-bold ${formData.gender === g ? 'border-secondary bg-green-50 text-secondary' : 'border-slate-100 text-slate-400'}`}
+                        >
+                          {g}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button className="mt-4" onClick={handleAdd}>Create Member Profile</Button>
+                </div>
+              </motion.div>
             </div>
-          </div>
-
-          <Input label="Relation" placeholder="e.g. Mother, Friend" icon={Users} />
-        </div>
-
-        <div className="mt-auto pt-12">
-          <Button onClick={() => navigate('ConfirmLocation')}>Save & Continue Booking</Button>
-        </div>
+          )}
+        </AnimatePresence>
       </div>
     </ScreenWrapper>
   );
@@ -963,9 +1080,9 @@ export const NotificationCenter = () => {
                     </div>
                   </div>
                   {!rem.taken && (
-                    <Button 
-                      size="sm" 
-                      onClick={() => markTaken(rem.id)} 
+                    <Button
+                      size="sm"
+                      onClick={() => markTaken(rem.id)}
                       className="w-auto px-4 py-2 text-xs"
                     >
                       Mark Taken

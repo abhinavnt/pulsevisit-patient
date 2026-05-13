@@ -18,7 +18,7 @@ export const ConfirmLocation = () => {
     nurse: {
       text: "confirm the address where the nurse should visit.",
       button: "Confirm & Search Nurses",
-      reasons: ['Wound Dressing', 'Injection', 'Post-Surgical Care', 'Elderly Assistance', 'Vital Monitoring', 'General Follow-up']
+      reasons: ['Post-Surgical Care', 'Diabetes Monitoring', 'Mother & Baby Care', 'Palliative Support', 'Injection/IV', 'Wound Management', 'Elderly Assistance']
     },
     physio: {
       text: "confirm the address where the physiotherapist should visit.",

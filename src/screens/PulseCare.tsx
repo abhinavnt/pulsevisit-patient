@@ -5,7 +5,8 @@ import { useAppContext } from '../store';
 import {
   MapPin, Phone, Star, CheckCircle2, Clock, ShieldCheck, ChevronRight,
   Camera, FileText, Package, AlertTriangle, Zap, RefreshCcw, Calendar,
-  Activity, Heart, User, MessageSquare, Navigation, Download, Plus, Minus
+  Activity, Heart, User, MessageSquare, Navigation, Download, Plus, Minus,
+  Check, Sparkles
 } from 'lucide-react';
 
 // ─────────────────────────────────────────────────────────────
@@ -17,108 +18,227 @@ export const NurseBooking = () => {
   const [bookingType, setBookingType] = useState<'onetime' | 'subscription'>('onetime');
   const [nurseType, setNurseType] = useState('');
   const [days, setDays] = useState(7);
+  const [frequency, setFrequency] = useState<'daily' | 'alternate' | 'weekly'>('daily');
+  const [timeSlot, setTimeSlot] = useState<'morning' | 'afternoon' | 'evening'>('morning');
 
   const nurseTypes = [
     { id: 'general', label: 'General Care', desc: 'Daily assistance & monitoring', icon: '🩺' },
     { id: 'wound', label: 'Wound Care', desc: 'Dressing & wound management', icon: '🩹' },
     { id: 'injection', label: 'Injection / IV', desc: 'Medication administration', icon: '💉' },
     { id: 'senior', label: 'Elder Care', desc: 'Specialized senior care', icon: '👴' },
+    { id: 'post-op', label: 'Post-Surgical', desc: 'Recovery & surgical site care', icon: '🏥' },
+    { id: 'diabetes', label: 'Diabetes Care', desc: 'Insulin & blood sugar monitoring', icon: '🩸' },
+    { id: 'mother', label: 'Mother & Baby', desc: 'Postnatal & infant care support', icon: '👶' },
+    { id: 'palliative', label: 'Palliative Care', desc: 'Comfort & pain management', icon: '🤍' },
+    { id: 'physio-assist', label: 'Physio Assist', desc: 'Support with physical therapy', icon: '🧘' },
+  ];
+
+  const frequencies = [
+    { id: 'daily', label: 'Daily', desc: 'Every day', icon: <Activity className="w-4 h-4" /> },
+    { id: 'alternate', label: 'Alternate', desc: 'Every 2nd day', icon: <RefreshCcw className="w-4 h-4" /> },
+    { id: 'weekly', label: 'Weekly', desc: 'Once a week', icon: <Calendar className="w-4 h-4" /> },
+  ];
+
+  const timeSlots = [
+    { id: 'morning', label: 'Morning', time: '8 AM - 11 AM', icon: '🌅' },
+    { id: 'afternoon', label: 'Afternoon', time: '12 PM - 3 PM', icon: '☀️' },
+    { id: 'evening', label: 'Evening', time: '5 PM - 8 PM', icon: '🌙' },
   ];
 
   const canContinue = nurseType !== '';
+
+  const calculatePrice = () => {
+    let base = 500;
+    if (bookingType === 'onetime') return base;
+    
+    let multiplier = 1;
+    if (frequency === 'alternate') multiplier = 0.55;
+    if (frequency === 'weekly') multiplier = 0.15;
+    
+    let total = base * days * multiplier;
+    let savings = (base * days * multiplier) * 0.15; // 15% discount for sub
+    return { total: Math.round(total - savings), savings: Math.round(savings) };
+  };
+
+  const pricing = calculatePrice();
 
   return (
     <ScreenWrapper className="bg-background">
       <TopBar title="Book a Nurse" onBack={goBack} />
 
-      <div className="px-6 py-6 flex flex-col flex-1 pb-28">
+      <div className="px-6 py-6 flex flex-col flex-1 pb-32 overflow-y-auto">
         {/* Booking Type Toggle */}
-        <div className="bg-gray-100 rounded-2xl p-1 flex mb-6">
+        <div className="bg-gray-100 rounded-2xl p-1 flex mb-8 shrink-0">
           <button
-            className={`flex-1 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 ${bookingType === 'onetime' ? 'bg-white text-primary shadow-sm' : 'text-gray-500'}`}
+            className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-200 ${bookingType === 'onetime' ? 'bg-white text-primary shadow-sm' : 'text-gray-500'}`}
             onClick={() => setBookingType('onetime')}
           >
             One-time Visit
           </button>
           <button
-            className={`flex-1 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 ${bookingType === 'subscription' ? 'bg-white text-secondary shadow-sm' : 'text-gray-500'}`}
+            className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-200 ${bookingType === 'subscription' ? 'bg-white text-secondary shadow-sm' : 'text-gray-500'}`}
             onClick={() => setBookingType('subscription')}
           >
             Subscription
           </button>
         </div>
 
-        {/* Subscription Duration */}
-        <AnimatePresence>
+        {/* Subscription Configuration */}
+        <AnimatePresence mode="wait">
           {bookingType === 'subscription' && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden mb-6"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-8 mb-8"
             >
-              <Card className="p-5 border-secondary/20 bg-green-50/30">
-                <p className="text-sm font-semibold text-gray-900 mb-4">Select Duration</p>
-                <div className="flex items-center justify-between">
+              {/* Duration Card */}
+              <Card className="p-6 border-secondary/20 bg-green-50/30">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-sm font-bold text-gray-900">Subscription Duration</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">Choose how many days you need care</p>
+                  </div>
+                  <div className="bg-white px-3 py-1.5 rounded-full border border-secondary/20 shadow-sm">
+                    <span className="text-sm font-bold text-secondary">{days} Days</span>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between gap-6">
                   <button
-                    onClick={() => setDays(Math.max(1, days - 1))}
-                    className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm active:scale-95 transition-transform"
+                    onClick={() => setDays(Math.max(7, days - 1))}
+                    className="w-12 h-12 rounded-2xl bg-white border border-gray-200 flex items-center justify-center shadow-sm active:scale-90 transition-transform"
                   >
-                    <Minus className="w-4 h-4 text-gray-600" />
+                    <Minus className="w-5 h-5 text-gray-600" />
                   </button>
-                  <div className="text-center">
-                    <span className="text-4xl font-bold text-primary">{days}</span>
-                    <p className="text-sm text-gray-500 font-medium">days</p>
+                  <div className="flex-1 h-2 bg-gray-200 rounded-full relative">
+                    <div 
+                      className="absolute left-0 top-0 h-full bg-secondary rounded-full" 
+                      style={{ width: `${(days / 30) * 100}%` }} 
+                    />
                   </div>
                   <button
                     onClick={() => setDays(Math.min(30, days + 1))}
-                    className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm active:scale-95 transition-transform"
+                    className="w-12 h-12 rounded-2xl bg-white border border-gray-200 flex items-center justify-center shadow-sm active:scale-90 transition-transform"
                   >
-                    <Plus className="w-4 h-4 text-gray-600" />
+                    <Plus className="w-5 h-5 text-gray-600" />
                   </button>
                 </div>
-                <div className="flex gap-2 mt-4 flex-wrap">
+
+                <div className="flex gap-2 mt-6 overflow-x-auto pb-1 no-scrollbar">
                   {[7, 14, 21, 30].map((d) => (
                     <button
                       key={d}
                       onClick={() => setDays(d)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${days === d ? 'bg-secondary text-white border-secondary' : 'border-gray-200 text-gray-600 bg-white'}`}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold border shrink-0 transition-all ${days === d ? 'bg-secondary text-white border-secondary shadow-md' : 'border-gray-200 text-gray-500 bg-white hover:bg-gray-50'}`}
                     >
                       {d} days
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-secondary font-medium mt-4 bg-green-50 px-3 py-2 rounded-xl">
-                  Nurse will visit daily for {days} consecutive days
-                </p>
               </Card>
+
+              {/* Frequency Selection */}
+              <div>
+                <h3 className="text-sm font-bold text-gray-900 mb-4">Visit Frequency</h3>
+                <div className="grid grid-cols-3 gap-3">
+                  {frequencies.map((f) => (
+                    <button
+                      key={f.id}
+                      onClick={() => setFrequency(f.id as any)}
+                      className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${frequency === f.id ? 'border-secondary bg-green-50' : 'border-gray-100 bg-white'}`}
+                    >
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${frequency === f.id ? 'bg-secondary text-white' : 'bg-gray-100 text-gray-400'}`}>
+                        {f.icon}
+                      </div>
+                      <div className="text-center">
+                        <p className={`text-xs font-bold ${frequency === f.id ? 'text-secondary' : 'text-gray-900'}`}>{f.label}</p>
+                        <p className="text-[10px] text-gray-400 mt-0.5">{f.desc}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Time Slot Selection */}
+              <div>
+                <h3 className="text-sm font-bold text-gray-900 mb-4">Preferred Time Slot</h3>
+                <div className="space-y-3">
+                  {timeSlots.map((slot) => (
+                    <button
+                      key={slot.id}
+                      onClick={() => setTimeSlot(slot.id as any)}
+                      className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all ${timeSlot === slot.id ? 'border-primary bg-blue-50/50' : 'border-gray-100 bg-white'}`}
+                    >
+                      <span className="text-2xl">{slot.icon}</span>
+                      <div className="flex-1 text-left">
+                        <p className={`text-sm font-bold ${timeSlot === slot.id ? 'text-primary' : 'text-gray-900'}`}>{slot.label}</p>
+                        <p className="text-xs text-gray-500">{slot.time}</p>
+                      </div>
+                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${timeSlot === slot.id ? 'border-primary bg-primary' : 'border-gray-200'}`}>
+                        {timeSlot === slot.id && <Check className="w-3.5 h-3.5 text-white" />}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Savings Card */}
+              <div className="bg-gradient-to-br from-secondary to-green-600 rounded-2xl p-5 text-white shadow-lg shadow-secondary/20">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest">Est. Savings</p>
+                    <p className="text-lg font-black">₹{(pricing as any).savings}</p>
+                  </div>
+                </div>
+                <h4 className="font-bold text-sm">Pulse Subscription Benefit</h4>
+                <p className="text-xs text-white/80 mt-1 leading-relaxed">
+                  You're getting a 15% discount and priority booking with this {days}-day plan.
+                </p>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
 
         {/* Nurse Type Selection */}
-        <h3 className="text-sm font-bold text-gray-900 mb-3">Type of Care Needed</h3>
-        <div className="flex flex-col gap-3 mb-6">
-          {nurseTypes.map((type) => (
-            <button
-              key={type.id}
-              onClick={() => setNurseType(type.id)}
-              className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left ${nurseType === type.id ? 'border-primary bg-blue-50/50' : 'border-gray-200 bg-white hover:bg-gray-50'}`}
-            >
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0 ${nurseType === type.id ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                {type.icon}
-              </div>
-              <div className="flex-1">
-                <p className={`font-semibold text-sm ${nurseType === type.id ? 'text-primary' : 'text-gray-900'}`}>{type.label}</p>
-                <p className="text-xs text-gray-500 mt-0.5">{type.desc}</p>
-              </div>
-              {nurseType === type.id && <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />}
-            </button>
-          ))}
+        <div className={bookingType === 'subscription' ? 'pt-4' : ''}>
+          <h3 className="text-sm font-bold text-gray-900 mb-4">Type of Care Needed</h3>
+          <div className="flex flex-col gap-3 mb-8">
+            {nurseTypes.map((type) => (
+              <button
+                key={type.id}
+                onClick={() => setNurseType(type.id)}
+                className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left ${nurseType === type.id ? 'border-primary bg-blue-50/50' : 'border-gray-100 bg-white hover:bg-gray-50'}`}
+              >
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0 ${nurseType === type.id ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                  {type.icon}
+                </div>
+                <div className="flex-1">
+                  <p className={`font-bold text-sm ${nurseType === type.id ? 'text-primary' : 'text-gray-900'}`}>{type.label}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{type.desc}</p>
+                </div>
+                {nurseType === type.id && <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="mt-auto pt-4">
+        <div className="mt-auto pt-6 bg-background/80 backdrop-blur-md sticky bottom-0 -mx-6 px-6 pb-6 border-t border-gray-100">
+          <div className="flex items-center justify-between mb-4 px-2">
+            <div>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Estimated</p>
+              <p className="text-xl font-black text-gray-900">₹{bookingType === 'subscription' ? (pricing as any).total : 500}</p>
+            </div>
+            {bookingType === 'subscription' && (
+              <div className="text-right">
+                <p className="text-[10px] font-bold text-secondary uppercase tracking-widest">Plan</p>
+                <p className="text-xs font-bold text-gray-600">{days} Days • {frequency}</p>
+              </div>
+            )}
+          </div>
           <Button onClick={() => { setSelectedService('nurse'); navigate('ConfirmLocation'); }} disabled={!canContinue}>
             Confirm & Choose Location
           </Button>
@@ -349,7 +469,139 @@ export const NurseEnRoute = () => {
           </div>
         </div>
 
-        <Button onClick={() => navigate('Home')}>Simulate Arrival</Button>
+        <Button onClick={() => navigate('NurseOTPVerification')}>Simulate Arrival</Button>
+      </div>
+    </ScreenWrapper>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────
+// NURSE OTP VERIFICATION
+// ─────────────────────────────────────────────────────────────
+
+export const NurseOTPVerification = () => {
+  const { navigate } = useAppContext();
+  const otp = ['4', '8', '2', '9'];
+
+  useEffect(() => {
+    const timer = setTimeout(() => navigate('NurseVisitOngoing'), 4000);
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
+  return (
+    <ScreenWrapper className="bg-white px-6 py-12 flex flex-col justify-between">
+      <div className="flex flex-col items-center text-center mt-12">
+        <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mb-8">
+          <ShieldCheck className="w-10 h-10 text-primary" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Nurse has arrived</h2>
+        <p className="text-gray-500 mb-12 px-4 leading-relaxed">
+          Please share this 4-digit **START OTP** with the nurse to begin the home-care service.
+        </p>
+
+        <div className="flex gap-4 justify-center mb-12">
+          {otp.map((digit, i) => (
+            <div
+              key={i}
+              className="w-16 h-16 bg-gray-50 border-2 border-gray-200 rounded-2xl flex items-center justify-center text-center text-3xl font-bold text-primary shadow-sm"
+            >
+              {digit}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-auto pt-8 flex flex-col items-center justify-center">
+        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-sm text-gray-500 font-medium">Waiting for nurse to verify...</p>
+      </div>
+    </ScreenWrapper>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────
+// NURSE VISIT ONGOING
+// ─────────────────────────────────────────────────────────────
+
+export const NurseVisitOngoing = () => {
+  const { navigate } = useAppContext();
+
+  useEffect(() => {
+    const timer = setTimeout(() => navigate('NurseEndOTP'), 5000);
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
+  return (
+    <ScreenWrapper className="bg-primary text-white items-center justify-center px-6 relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--color-secondary)_0%,_transparent_70%)] opacity-20" />
+
+      <motion.div
+        animate={{ scale: [1, 1.05, 1] }}
+        transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+        className="w-48 h-48 rounded-full border-4 border-white/20 flex items-center justify-center mb-12 relative z-10"
+      >
+        <div className="w-40 h-40 rounded-full border-4 border-white/40 flex items-center justify-center">
+          <div className="w-32 h-32 rounded-full border-4 border-white/60 flex items-center justify-center bg-white/10 backdrop-blur-sm">
+            <div className="text-center">
+              <Activity className="w-10 h-10 text-white mb-2 mx-auto animate-pulse" />
+              <p className="text-[10px] font-bold text-blue-200 uppercase tracking-widest">Ongoing</p>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      <h2 className="text-2xl font-bold mb-2 text-center tracking-tight relative z-10 text-white">Service in Progress</h2>
+      <p className="text-blue-200 mb-12 text-center relative z-10">Nurse Priya S. is currently attending to the patient.</p>
+      
+      <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 relative z-10 w-full">
+        <div className="flex items-center gap-3">
+          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+          <p className="text-xs font-medium">Recording vitals and assessment...</p>
+        </div>
+      </div>
+    </ScreenWrapper>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────
+// NURSE END OTP
+// ─────────────────────────────────────────────────────────────
+
+export const NurseEndOTP = () => {
+  const { navigate } = useAppContext();
+  const otp = ['8', '1', '0', '5'];
+
+  useEffect(() => {
+    const timer = setTimeout(() => navigate('PrescriptionUploaded'), 4000);
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
+  return (
+    <ScreenWrapper className="bg-white px-6 py-12 flex flex-col justify-between">
+      <div className="flex flex-col items-center text-center mt-12">
+        <div className="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mb-8">
+          <ShieldCheck className="w-10 h-10 text-red-500" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Finalize Visit</h2>
+        <p className="text-gray-500 mb-12 px-4 leading-relaxed">
+          Please share this 4-digit **END OTP** with the nurse to finalize the visit and receive the summary report.
+        </p>
+
+        <div className="flex gap-4 justify-center mb-12">
+          {otp.map((digit, i) => (
+            <div
+              key={i}
+              className="w-16 h-16 bg-gray-50 border-2 border-gray-200 rounded-2xl flex items-center justify-center text-center text-3xl font-bold text-red-500 shadow-sm"
+            >
+              {digit}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-auto pt-8 flex flex-col items-center justify-center">
+        <div className="w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-sm text-gray-500 font-medium">Waiting for nurse to finalize...</p>
       </div>
     </ScreenWrapper>
   );
