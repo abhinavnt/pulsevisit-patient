@@ -472,7 +472,7 @@ export const Home = () => {
           </motion.div>
         )}
 
-        <Button variant="outline" className="gap-2 border-gray-200 text-gray-700 bg-white mt-6" onClick={() => { }}>
+        <Button variant="outline" className="gap-2 border-gray-200 text-gray-700 bg-white mt-6" onClick={() => navigate('ComingSoon')}>
           <HelpCircle className="w-5 h-5 text-primary" />
           Quick Support
         </Button>
@@ -871,7 +871,7 @@ export const Profile = () => {
             <ProfileMenuItem icon={User} label="Personal Information" onClick={() => navigate('ProfileCompletion')} />
             <ProfileMenuItem icon={Users} label="Family Members" onClick={() => navigate('MemberManagement')} />
             <ProfileMenuItem icon={MapPin} label="Saved Addresses" onClick={() => navigate('AddressSelection')} />
-            <ProfileMenuItem icon={CreditCard} label="Payment Methods" onClick={() => { }} />
+            <ProfileMenuItem icon={CreditCard} label="Payment Methods" onClick={() => navigate('ComingSoon')} />
           </div>
         </Card>
 
@@ -879,8 +879,8 @@ export const Profile = () => {
         <Card className="mb-6 p-0 overflow-hidden">
           <div className="flex flex-col">
             <ProfileMenuItem icon={Bell} label="Notifications" onClick={() => navigate('NotificationCenter')} />
-            <ProfileMenuItem icon={Settings} label="Settings" onClick={() => { }} />
-            <ProfileMenuItem icon={HelpCircle} label="Help & Support" onClick={() => { }} />
+            <ProfileMenuItem icon={Settings} label="Settings" onClick={() => navigate('ComingSoon')} />
+            <ProfileMenuItem icon={HelpCircle} label="Help & Support" onClick={() => navigate('ComingSoon')} />
           </div>
         </Card>
 
@@ -1126,6 +1126,22 @@ export const NotificationCenter = () => {
           </Card>
         </div>
       </div>
+    </ScreenWrapper>
+  );
+};
+
+export const ComingSoon = () => {
+  const { goBack } = useAppContext();
+  return (
+    <ScreenWrapper className="bg-white flex flex-col items-center justify-center p-8 text-center">
+      <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mb-6">
+        <Sparkles className="w-12 h-12 text-primary animate-pulse" />
+      </div>
+      <h2 className="text-2xl font-bold text-gray-900 mb-2">Coming Soon!</h2>
+      <p className="text-gray-500 mb-8 leading-relaxed">
+        We're working hard to bring this feature to life. It will be available in the next release of Pulse Visit.
+      </p>
+      <Button onClick={goBack}>Got it</Button>
     </ScreenWrapper>
   );
 };

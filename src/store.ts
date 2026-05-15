@@ -79,7 +79,8 @@ export type Screen =
   | 'PulseCareHistory'
   | 'DocumentViewer'
   | 'NotificationCenter'
-  | 'AISymptomChecker';
+  | 'AISymptomChecker'
+  | 'ComingSoon';
 
 export interface ActiveBooking {
   id: string;

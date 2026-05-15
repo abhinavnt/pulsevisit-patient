@@ -3,7 +3,7 @@ import { AnimatePresence } from 'motion/react';
 import { AppContext, Screen, ActiveBooking } from './store';
 
 import { Splash, Permission, Auth, ProfileCompletion } from './screens/Onboarding';
-import { Home, MemberManagement, AddressSelection, ConsultationHistory, PulseCareHistory, DocumentViewer, Profile, NotificationCenter } from './screens/Main';
+import { Home, MemberManagement, AddressSelection, ConsultationHistory, PulseCareHistory, DocumentViewer, Profile, NotificationCenter, ComingSoon } from './screens/Main';
 import { ConfirmLocation, SearchingDoctor, DoctorAccepted, Payment, DoctorEnRoute, OTPVerification, ConsultationOngoing, EndConsultationOTP, PrescriptionUploaded, RatingFeedback, AISymptomChecker } from './screens/Booking';
 import { NurseBooking, SearchingNurse, NurseAccepted, NurseEnRoute, NurseOTPVerification, NurseVisitOngoing, NurseEndOTP, MedicineRequest, MedicineOrderConfirmed, MedicineTracking, AmbulanceRequest, SearchingAmbulance, AmbulanceEnRoute, PhysioBooking, SearchingPhysio, PhysioAccepted, PhysioEnRoute } from './screens/PulseCare';
 import { LabTestBooking, LabTestConfirm, SearchingPhlebotomist, PhlebotomistEnRoute, LabResults, PsychologistBooking, SearchingPsychologist, PsychologistAccepted, PsychologistSession, OnlineCounseling, CounselorMatched, CounselingSession } from './screens/MoreCare';
@@ -139,6 +139,7 @@ export default function App() {
       case 'CarePlanReview': return <CarePlanReview key="CarePlanReview" />;
       case 'CarePlanCheckout': return <CarePlanCheckout key="CarePlanCheckout" />;
       case 'CarePlanConfirmed': return <CarePlanConfirmed key="CarePlanConfirmed" />;
+      case 'ComingSoon': return <ComingSoon key="ComingSoon" />;
       default: return <Splash key="Splash" />;
     }
   };
